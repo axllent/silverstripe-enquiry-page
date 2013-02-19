@@ -3,7 +3,7 @@
  * SilverStripe Enquiry Form
  * =========================
  *
- * Module to add a simple configurable enquiry for to SilverStripe 3
+ * Module to add a simple configurable enquiry form to SilverStripe 3
  *
  * License: MIT-style license http://opensource.org/licenses/MIT
  * Authors: Techno Joy development team (www.technojoy.co.nz)
@@ -61,7 +61,7 @@ class EnquiryForm extends Page {
 		array_push($emailSettings, new EmailField('EmailTo', 'Send email to'));
 		array_push($emailSettings, new EmailField('EmailFrom', 'Send email from'));
 		array_push($emailSettings, new TextField('EmailSubject', 'Email subject'));
-		array_push($emailSettings, new HeaderField('Message once completed', 5));
+		array_push($emailSettings, new HeaderField('Message on website once completed', 5));
 		$editor = new HTMLEditorField('EmailSubmitCompletion', '');
 		$editor->setRows(10);
 		array_push($emailSettings, $editor);
