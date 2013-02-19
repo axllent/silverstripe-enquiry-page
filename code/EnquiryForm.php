@@ -2,7 +2,7 @@
 
 class EnquiryForm extends Page {
 
-	static $icon = 'silverstripe-enquiry-form/icons/EnquiryForm.png';
+	static $icon = 'silverstripe-enquiry-form/templates/icons/EnquiryForm.png';
 
 	static $description = 'Page with an editable contact form';
 
