@@ -11,7 +11,7 @@ order your own fields, including the following types:
 * **Header** (h4), section header
 * **Note** (paragraph of text)
 
-Other configuration option include:
+###Other configuration option include:
 * Send email to
 * Send email from (reply to will default to the first Email field in the form, or alternatively this value)
 * Email subject
