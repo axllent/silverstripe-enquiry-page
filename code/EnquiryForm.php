@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * SilverStripe Enquiry Form
+ * =========================
+ *
+ * Module to add a simple configurable enquiry for to SilverStripe 3
+ *
+ * License: MIT-style license http://opensource.org/licenses/MIT
+ * Authors: Techno Joy development team (www.technojoy.co.nz)
+ */
+ 
 class EnquiryForm extends Page {
 
 	static $icon = 'silverstripe-enquiry-form/templates/icons/EnquiryForm.png';
@@ -238,8 +247,6 @@ class EnquiryForm_Controller extends Page_Controller {
 		//populate template
 		$templateData = $this->getTemplateData($data);
 		$email->populateTemplate($templateData);
-		// echo '<pre>';
-		// echo $email->debug();
 		//send mail
 		$email->send();
 		//return to submitted message
