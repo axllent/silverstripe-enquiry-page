@@ -1,6 +1,6 @@
-Enquiry Form Module for SilverStripe 3
+Enquiry Page Module for SilverStripe 3
 ======================================
-This is a simple module to add an Enquiry Form pagetype to the CMS.
+This is a simple module to add an Enquiry Page pagetype to the CMS.
 The module uses vanilla JavaScript, so no requirements for third-party libraries
 (ie: jQuery or MooTools). The enquiry form can be configured to add &
 order your own fields, including the following types:
