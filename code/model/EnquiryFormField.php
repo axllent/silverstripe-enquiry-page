@@ -17,7 +17,7 @@ class EnquiryFormField extends DataObject {
 		'SortOrder' => 99
 	);
 
-	public static $has_one = array('EnquiryForm' => 'EnquiryForm');
+	public static $has_one = array('EnquiryPage' => 'EnquiryPage');
 
 	public static $summary_fields = array('FieldName', 'FieldType');
 
