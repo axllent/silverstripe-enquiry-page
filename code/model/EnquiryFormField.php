@@ -24,7 +24,7 @@ class EnquiryFormField extends DataObject {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('SortOrder');
-		$fields->removeByName('EnquiryFormID');
+		$fields->removeByName('EnquiryPageID');
 		switch($this->FieldType) {
 			case 'Select':
 				$fields->addFieldToTab('Root.Main', new HeaderField('Add select options below (one per line):', 4), 'FieldOptions');
