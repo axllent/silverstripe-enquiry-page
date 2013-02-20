@@ -41,7 +41,7 @@ class EnquiryPage extends Page {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root.EnquiryForm', new HeaderField('Enquiry Form', 2));
+		$fields->addFieldToTab('Root.EnquiryForm', new HeaderField('Enquiry Form Setup', 2));
 
 		$gridFieldConfig = GridFieldConfig::create()->addComponents(
 			new GridFieldToolbarHeader(),
