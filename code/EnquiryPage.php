@@ -250,11 +250,11 @@ class EnquiryPage_Controller extends Page_Controller {
 		//send mail
 		$email->send();
 		//return to submitted message
-		Director::redirect($this->Link("?success=1"));
+		Director::redirect($this->Link("?success#thankyou"));
 	}
 
 	public function Success() {
-		return isset($_REQUEST['success']) && $_REQUEST['success'] == "1";
+		return isset($_GET['success']);
 	}
 
 }

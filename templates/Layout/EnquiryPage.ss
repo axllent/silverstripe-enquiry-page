@@ -1,5 +1,6 @@
 $Content
 <% if $Success %>
+<a name="thankyou"></a>
 <div class="EnquiryPageSuccess">$EmailSubmitCompletion</div>
 <% else %>
 $EnquiryForm
