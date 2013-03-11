@@ -46,7 +46,6 @@ class EnquiryPage extends Page {
 		$gridFieldConfig = GridFieldConfig::create()->addComponents(
 			new GridFieldToolbarHeader(),
 			new GridFieldAddNewButton('toolbar-header-left'),
-			new GridFieldSortableHeader(),
 			new GridFieldDataColumns(),
 			new GridFieldEditButton(),
 			new GridFieldDeleteAction(),
