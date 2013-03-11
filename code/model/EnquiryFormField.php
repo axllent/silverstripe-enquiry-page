@@ -89,6 +89,20 @@ class EnquiryFormField extends DataObject {
 
 	}
 
+	/* Permissions */
+	function canView($member = null) {
+		return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+	}
+	function canEdit($member = null) {
+		return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+	}
+	function canDelete($member = null) {
+		return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+	}
+	function canCreate($member = null) {
+		return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+	}
+
 	function getTitle(){
 		if($this->exists()) return $this->FieldName;
 		return 'New';
