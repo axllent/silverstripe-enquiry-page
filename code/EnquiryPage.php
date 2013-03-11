@@ -45,12 +45,18 @@ class EnquiryPage extends Page {
 
 		$gridFieldConfig = GridFieldConfig::create()->addComponents(
 			new GridFieldToolbarHeader(),
+			new GridFieldSortableHeader(),
 			new GridFieldAddNewButton('toolbar-header-left'),
 			new GridFieldDataColumns(),
 			new GridFieldEditButton(),
 			new GridFieldDeleteAction(),
 			new GridFieldDetailForm(),
 			new GridFieldSortableRows('SortOrder')
+		);
+
+		/* Unset sorting hack */
+		$gridFieldConfig->getComponentByType('GridFieldSortableHeader')->setFieldSorting(
+			array('FieldName'=>'FieldNameNoSorting', 'FieldType' => 'FieldTypeNoSorting')
 		);
 
 		$gridField = new GridField('EnquiryFormFields', false, $this->EnquiryFormFields(), $gridFieldConfig);
