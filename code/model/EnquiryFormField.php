@@ -76,7 +76,7 @@ class EnquiryFormField extends DataObject {
 		if ($this->FieldType == 'Select' || $this->FieldType == 'Checkbox'){
 			$this->FieldOptions = trim(implode("\n", preg_split('/\n\r?/', $this->FieldOptions, -1, PREG_SPLIT_NO_EMPTY)));
 		}
-      	return $valid;
+		return $valid;
 	}
 
 	function onBeforeWrite() {
