@@ -15,6 +15,10 @@ class EnquiryPage extends Page {
 
 	static $description = 'Page with an editable contact form';
 
+	static $singular_name = 'Enquiry Page';
+
+	static $plural_name = 'Enquiry Pages';
+
 	public static $db = array(
 		'EmailTo' => 'Varchar(254)',
 		'EmailBcc' => 'Varchar(254)',
