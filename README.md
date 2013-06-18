@@ -18,6 +18,7 @@ order your own fields, including the following types:
 * Message once completed
 * BCC messages
 * Submit button text
+* Captcha image option (anti-spam)
 
 ##Requirements
 * SilverStripe 3
