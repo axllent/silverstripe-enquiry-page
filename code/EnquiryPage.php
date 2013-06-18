@@ -11,7 +11,7 @@
 
 class EnquiryPage extends Page {
 
-	static $icon = 'silverstripe-enquiry-page/templates/icons/EnquiryPage.png';
+	static $icon = 'silverstripe-enquiry-page/images/EnquiryPage.png';
 
 	static $description = 'Page with an editable contact form';
 
@@ -26,6 +26,8 @@ class EnquiryPage extends Page {
 		'EmailSubject' => 'Varchar(254)',
 		'EmailSubmitButtonText' => 'Varchar(20)',
 		'EmailSubmitCompletion' => 'HTMLText',
+		'AddCaptcha' => 'Boolean',
+		'CaptchaHelp' => 'Varchar(100)',
 	);
 
 	public static $has_many = array(
@@ -37,6 +39,7 @@ class EnquiryPage extends Page {
 		'EmailSubject' => 'Website Enquiry',
 		'EmailSubmitButtonText' => 'Submit Enquiry',
 		'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
+		'CaptchaHelp' => 'To prevent spam, please copy the 4 digits in the image into the field next to it'
 	);
 
 	protected $usedFields = array();
@@ -74,6 +77,9 @@ class EnquiryPage extends Page {
 		$editor = new HTMLEditorField('EmailSubmitCompletion', '');
 		$editor->setRows(10);
 		array_push($emailSettings, $editor);
+		array_push($emailSettings, new LiteralField('BccHdr',
+			'<p>If you would like a copy of the enquiry to be sent elsewhere, fill that in here.</p>'
+		));
 		array_push($emailSettings, new EmailField('EmailBcc', 'Send BCC copy to (optional)'));
 		array_push($emailSettings, new TextField('EmailSubmitButtonText', 'Submit button text'));
 
@@ -82,6 +88,24 @@ class EnquiryPage extends Page {
 		)->setHeadingLevel(5);
 
 		$fields->addFieldsToTab('Root.EnquiryForm', $toggleSettings);
+
+		$spamSettings = array();
+		array_push($spamSettings, new LiteralField('SpamHdr',
+			'<p>You can optionally enable an anti-spam "captcha" image.
+			This adds a small image with 4 random numbers which needs to be filled in correctly.</p>'
+		));
+		array_push($spamSettings, new DropdownField('AddCaptcha', 'Add captcha image (optional)', array(0 => 'No', 1 => 'Yes')));
+		array_push($spamSettings, new LiteralField('CaptchaInfo',
+			'<p>If you would like to explain what the captcha is, please explain briefly what it is. This is only used if
+			 you have selected to add the captcha image above.</p>'
+		));
+		array_push($spamSettings, new TextField('CaptchaHelp', 'Captcha help (optional)'));
+
+		$toggleSpam = ToggleCompositeField::create('SpamSettings', 'Anti-Spam Settings',
+			$spamSettings
+		)->setHeadingLevel(5);
+
+		$fields->addFieldsToTab('Root.EnquiryForm', $toggleSpam);
 
 		return $fields;
 	}
@@ -221,6 +245,18 @@ class EnquiryPage_Controller extends Page_Controller {
 				$fields->push($field);
 			}
 
+		}
+
+		if ($this->AddCaptcha) {
+			$field = new CaptchaField('CaptchaImage', 'Verfication Image');
+			$field->addExtraClass('required');
+
+			$validator->addRequiredField('CaptchaImage');
+			$jsValidator['CaptchaImage'] = 'Text';
+			if ($this->CaptchaHelp)
+				$field->setRightTitle('<p id="CaptchaHelp">'.htmlspecialchars($this->CaptchaHelp).'</p>');
+
+			$fields->push($field);
 		}
 
 		$actions = new FieldList(
