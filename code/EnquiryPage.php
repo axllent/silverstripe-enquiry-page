@@ -295,7 +295,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		//send mail
 		$email->send();
 		//return to submitted message
-		Director::redirect($this->Link("?success#thankyou"));
+		$this->redirect($this->Link("?success#thankyou"));
 	}
 
 	public function Success() {
