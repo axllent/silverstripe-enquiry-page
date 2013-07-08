@@ -1,6 +1,5 @@
 function validateEnquiryForm(){
 	var valid = true;
-	var f = document.getElementById('Form_EnquiryForm');
 	var e = EnquiryFormValidator;
 	for (var el in e) {
 		var elItem = document.getElementById('Form_EnquiryForm_'+el);
@@ -22,6 +21,15 @@ function validateEnquiryForm(){
 			var elValue = elItem.options[elItem.selectedIndex].value;
 			if (elValue == '') {
 				elValue = false;
+			}
+		}
+		else if (e[el] == 'Radio') { // Radio
+			var elValue = false;
+			var rdios = document.getElementsByName(el);
+			for(var i = 0; i < rdios.length; i++) {
+				if(rdios[i].checked == true) {
+					elValue = true;
+				}
 			}
 		}
 		if (elValue === false) {

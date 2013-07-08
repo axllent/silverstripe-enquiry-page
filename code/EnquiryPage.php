@@ -15,10 +15,6 @@ class EnquiryPage extends Page {
 
 	static $description = 'Page with an editable contact form';
 
-	static $singular_name = 'Enquiry Page';
-
-	static $plural_name = 'Enquiry Pages';
-
 	public static $db = array(
 		'EmailTo' => 'Varchar(254)',
 		'EmailBcc' => 'Varchar(254)',
@@ -222,6 +218,16 @@ class EnquiryPage_Controller extends Page_Controller {
 					foreach ($options as $o)
 						$tmp[trim($o)] = trim($o);
 					$field = new CheckboxSetField($key, htmlspecialchars($el->FieldName), $tmp);
+				}
+			}
+
+			else if ($el->FieldType == 'Radio') {
+				$options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
+				if(count($options) > 0) {
+					$tmp = array();
+					foreach ($options as $o)
+						$tmp[trim($o)] = trim($o);
+					$field = new OptionsetField($key, htmlspecialchars($el->FieldName), $tmp);
 				}
 			}
 

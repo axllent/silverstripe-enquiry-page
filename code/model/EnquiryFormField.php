@@ -7,7 +7,7 @@ class EnquiryFormField extends DataObject {
 	public static $db = array(
 		'SortOrder' => 'Int',
 		'FieldName' => 'Varchar(150)',
-		'FieldType' => 'Enum("Text, Email, Select, Checkbox, Header, Note","Text")',
+		'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note","Text")',
 		'FieldOptions' => 'Text',
 		'PlaceholderText' => 'Varchar(150)',
 		'RequiredField' => 'Boolean',
@@ -17,7 +17,7 @@ class EnquiryFormField extends DataObject {
 		'SortOrder' => 99
 	);
 
-	public static $has_one = array('EnquiryPage' => 'EnquiryPage');
+	public static $has_one = array('EnquiryPage' => 'SiteTree');
 
 	public static $summary_fields = array('FieldName', 'FieldType');
 
@@ -25,14 +25,34 @@ class EnquiryFormField extends DataObject {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('SortOrder');
 		$fields->removeByName('EnquiryPageID');
+		$fields->addFieldToTab('Root.Main', new DropdownField(
+			'FieldType', 'Field Type', array(
+				'Text' => 'Text field',
+				'Email' => 'Email field',
+				'Select' => 'Select - Dropdown select field',
+				'Checkbox' => 'Checkbox - tick multiple boxes',
+				'Radio' => 'Radio - tick single option',
+				'Header' => 'Header in the form',
+				'Note' => 'Note in form'
+			)
+		));
+		$fields->addFieldToTab('Root.Main', new TextareaField('FieldOptions', 'Field Options'));
+		$fields->addFieldToTab('Root.Main', new TextField('PlaceholderText', 'Placeholder Text'));
+		$fields->addFieldToTab('Root.Main', new CheckboxField('RequiredField', 'Required Field'));
+
 		switch($this->FieldType) {
 			case 'Select':
 				$fields->addFieldToTab('Root.Main', new HeaderField('Add select options below (one per line):', 4), 'FieldOptions');
 				$fields->removeByName('PlaceholderText');
 				break;
 			case 'Checkbox':
-				$fields->addFieldToTab('Root.Main', new HeaderField('Add checkbox options below (one per line):', 4), 'FieldOptions');
+				$fields->addFieldToTab('Root.Main', new HeaderField('Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
 				$fields->removeByName('RequiredField');
+				$fields->removeByName('PlaceholderText');
+				break;
+			case 'Radio':
+				$fields->addFieldToTab('Root.Main', new HeaderField('Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
+				// $fields->removeByName('RequiredField');
 				$fields->removeByName('PlaceholderText');
 				break;
 			case 'Header':
@@ -65,7 +85,7 @@ class EnquiryFormField extends DataObject {
 		return $fields;
 	}
 
-	public function validate(){
+	public function validate() {
 		$valid = parent::validate();
 		if (trim($this->FieldName) == '')
 			$valid->error("Please enter a Field Name");
@@ -82,7 +102,10 @@ class EnquiryFormField extends DataObject {
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$this->FieldName = trim($this->FieldName);
-		if(!in_array($this->FieldType, array('Text', 'Email', 'Select'))) {
+		if (in_array($this->FieldType, array('Radio'))) {
+			$this->PlaceholderText = '';
+		}
+		else if(!in_array($this->FieldType, array('Text', 'Email', 'Select'))) {
 			$this->RequiredField = 0;
 			$this->PlaceholderText = '';
 		}
