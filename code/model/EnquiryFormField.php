@@ -11,31 +11,35 @@ class EnquiryFormField extends DataObject {
 		'FieldOptions' => 'Text',
 		'PlaceholderText' => 'Varchar(150)',
 		'RequiredField' => 'Boolean',
-
 	);
+
 	public static $defaults = array(
 		'SortOrder' => 99
 	);
 
+	public static $fieldtypes = array(
+		'Text' => 'Text field',
+		'Email' => 'Email field',
+		'Select' => 'Select - Dropdown select field',
+		'Checkbox' => 'Checkbox - multiple tick boxes',
+		'Radio' => 'Radio - single tick option',
+		'Header' => 'Header in the form',
+		'Note' => 'Note in form'
+	);
+
 	public static $has_one = array('EnquiryPage' => 'SiteTree');
 
-	public static $summary_fields = array('FieldName', 'FieldType');
+	public static $summary_fields = array('FieldName', 'Type', 'Required');
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('SortOrder');
 		$fields->removeByName('EnquiryPageID');
+
 		$fields->addFieldToTab('Root.Main', new DropdownField(
-			'FieldType', 'Field Type', array(
-				'Text' => 'Text field',
-				'Email' => 'Email field',
-				'Select' => 'Select - Dropdown select field',
-				'Checkbox' => 'Checkbox - tick multiple boxes',
-				'Radio' => 'Radio - tick single option',
-				'Header' => 'Header in the form',
-				'Note' => 'Note in form'
-			)
+			'FieldType', 'Field Type', self::$fieldtypes
 		));
+
 		$fields->addFieldToTab('Root.Main', new TextareaField('FieldOptions', 'Field Options'));
 		$fields->addFieldToTab('Root.Main', new TextField('PlaceholderText', 'Placeholder Text'));
 		$fields->addFieldToTab('Root.Main', new CheckboxField('RequiredField', 'Required Field'));
@@ -52,7 +56,6 @@ class EnquiryFormField extends DataObject {
 				break;
 			case 'Radio':
 				$fields->addFieldToTab('Root.Main', new HeaderField('Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
-				// $fields->removeByName('RequiredField');
 				$fields->removeByName('PlaceholderText');
 				break;
 			case 'Header':
@@ -83,6 +86,14 @@ class EnquiryFormField extends DataObject {
 			$fields->removeByName('RequiredField');
 		}
 		return $fields;
+	}
+
+	public function getType() {
+		return self::$fieldtypes[$this->FieldType];
+	}
+
+	public function getRequired() {
+		return $this->RequiredField ? 'Yes' : 'No';
 	}
 
 	public function validate() {
@@ -126,7 +137,7 @@ class EnquiryFormField extends DataObject {
 		return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
 	}
 
-	function getTitle(){
+	function getTitle() {
 		if($this->exists()) return $this->FieldName;
 		return 'New';
 	}
