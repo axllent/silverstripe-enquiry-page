@@ -20,7 +20,7 @@ class EnquiryPage extends Page {
 		'EmailBcc' => 'Varchar(254)',
 		'EmailFrom' => 'Varchar(254)',
 		'EmailSubject' => 'Varchar(254)',
-		'EmailSubmitButtonText' => 'Varchar(20)',
+		'EmailSubmitButtonText' => 'Varchar(50)',
 		'EmailSubmitCompletion' => 'HTMLText',
 		'AddCaptcha' => 'Boolean',
 		'CaptchaHelp' => 'Varchar(100)',

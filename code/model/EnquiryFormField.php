@@ -93,6 +93,8 @@ class EnquiryFormField extends DataObject {
 	}
 
 	public function getRequired() {
+		if (in_array($this->FieldType, array('Header', 'Note')))
+			return false;
 		return $this->RequiredField ? 'Yes' : 'No';
 	}
 
