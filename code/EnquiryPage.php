@@ -127,27 +127,32 @@ class EnquiryPage extends Page {
 		return implode("<br />\n", $build);
 	}
 
-	public function dataToHtml($str){
+	public function dataToHtml($str) {
 		return nl2br(htmlspecialchars(trim($str)));
 	}
 
-	public function getTemplateData($data){
+	public function getTemplateData($data) {
 		$elements = $this->EnquiryFormFields();
 		$templateData = array();
 		$templateData['EmailData'] = new ArrayList();
 		foreach ($elements as $el){
 			$key = $this->keyGen($el->FieldName, $el->SortOrder);
-			if(
+			if ($el->FieldType == 'Header') {
+				$templateData['EmailData']->push(
+					new ArrayData(array('Header' => htmlspecialchars($el->FieldName), 'Type' => 'Header'))
+				);
+			}
+			else if (
 				!in_array($el->FieldType, array('Header', 'Note')) &&
 				isset($data[$key]) && $data[$key] != ''
-			){
+			) {
 				$hdr = htmlspecialchars($el->FieldName);
 				if(is_array($data[$key]))
 					$value = $this->arrayToHtml($data[$key]);
 				else
 					$value = $this->dataToHtml($data[$key]);
 				$templateData['EmailData']->push(
-					new ArrayData(array('Header' => $hdr, 'Value' => $value))
+					new ArrayData(array('Header' => $hdr, 'Value' => $value, 'Type' => $el->FieldType))
 				);
 			}
 		}
