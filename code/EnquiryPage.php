@@ -265,7 +265,7 @@ class EnquiryPage_Controller extends Page_Controller {
 			$validator->addRequiredField('CaptchaImage');
 			$jsValidator['CaptchaImage'] = 'Text';
 			if ($this->CaptchaHelp)
-				$field->setRightTitle('<p id="CaptchaHelp">'.htmlspecialchars($this->CaptchaHelp).'</p>');
+				$field->setRightTitle('<span id="CaptchaHelp">'.htmlspecialchars($this->CaptchaHelp).'</span>');
 
 			$fields->push($field);
 		}
