@@ -237,11 +237,20 @@ class EnquiryPage_Controller extends Page_Controller {
 			}
 
 			else if ($el->FieldType == 'Header') {
-				$field = new HeaderField(htmlspecialchars($el->FieldName), 4);
+				if ($el->FieldOptions)
+					$field = new LiteralField(htmlspecialchars($el->FieldName),
+						'<h4>' . htmlspecialchars($el->FieldName) . '</h4>
+						<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>'
+					);
+				else
+					$field = new HeaderField(htmlspecialchars($el->FieldName), 4);
 			}
 
 			else if ($el->FieldType == 'Note') {
-				$field = new LiteralField('Note', '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
+				if ($el->FieldOptions)
+					$field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
+				else
+					$field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
 			}
 
 			if($field) {

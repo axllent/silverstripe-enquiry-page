@@ -62,10 +62,18 @@ class EnquiryFormField extends DataObject {
 				$fields->removeByName('RequiredField');
 				$fields->removeByName('FieldOptions');
 				$fields->removeByName('PlaceholderText');
+				$fields->addFieldsToTab('Root.Main', array(
+					new HeaderField('FieldOptionsInfo', 'Optional text below header.', 4),
+					new TextareaField('FieldOptions', 'Text')
+				));
 				break;
 			case 'Note':
 				$fields->removeByName('RequiredField');
 				$fields->removeByName('FieldOptions');
+				$fields->addFieldsToTab('Root.Main', array(
+					new HeaderField('FieldOptionsInfo', 'If text is left empty then the Field Name is used', 4),
+					new TextareaField('FieldOptions', 'Text')
+				));
 				$fields->removeByName('PlaceholderText');
 				break;
 			case 'Text':
