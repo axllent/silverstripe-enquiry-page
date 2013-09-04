@@ -307,6 +307,8 @@ class EnquiryPage_Controller extends Page_Controller {
 		if($this->EmailBcc) {
 			$email->setBcc($this->EmailBcc);
 		}
+		//abuse / tracking
+		$email->addCustomHeader('X-Sender-IP', $_SERVER['REMOTE_ADDR']);
 		//set template
 		$email->setTemplate('EnquiryFormEmail');
 		//populate template
