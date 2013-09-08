@@ -1,4 +1,4 @@
-function validateEnquiryForm(){
+function validateEnquiryForm() {
 	var valid = true;
 	var e = EnquiryFormValidator;
 	for (var el in e) {
@@ -45,19 +45,19 @@ function validateEnquiryForm(){
 	return true;
 }
 
-function initEnquiryFormValidator(){
+function initEnquiryFormValidator() {
 	if(EnquiryFormValidator && document.getElementById('Form_EnquiryForm')) {
 		document.getElementById('Form_EnquiryForm').onsubmit=validateEnquiryForm;
 	}
 }
 
-function addEnquiryFormLoadEvent(func){
+function addEnquiryFormLoadEvent(func) {
 	var oldonload = window.onload;
 	if (typeof window.onload != 'function') window.onload = func;
 	else {
 		window.onload = function(){
-		oldonload();
-		func();
+			oldonload();
+			func();
 		}
 	}
 
