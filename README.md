@@ -21,5 +21,5 @@ order your own fields, including the following types:
 * Captcha image option (anti-spam)
 
 ##Requirements
-* SilverStripe 3
+* SilverStripe 3.0 (3.0 branch) and 3.1 (3.1 branch)
 * [SortableGridField module](https://github.com/UndefinedOffset/SortableGridField)
