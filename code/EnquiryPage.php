@@ -268,7 +268,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		}
 
 		if ($this->AddCaptcha) {
-			$field = new CaptchaField('CaptchaImage', 'Verfication Image');
+			$field = new CaptchaField('CaptchaImage', 'Verification Image');
 			$field->addExtraClass('required');
 
 			$validator->addRequiredField('CaptchaImage');
