@@ -270,7 +270,7 @@ private static $allowed_actions = array(
 		}
 
 		if($this->AddCaptcha) {
-			$field = new CaptchaField('CaptchaImage', 'Verfication Image');
+			$field = new CaptchaField('CaptchaImage', 'Verification Image');
 			$field->addExtraClass('required');
 
 			$validator->addRequiredField('CaptchaImage');
