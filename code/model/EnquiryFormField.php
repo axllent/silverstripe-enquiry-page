@@ -4,7 +4,7 @@ class EnquiryFormField extends DataObject {
 
 	public static $default_sort = "SortOrder ASC";
 
-	public static $db = array(
+	private static $db = array(
 		'SortOrder' => 'Int',
 		'FieldName' => 'Varchar(150)',
 		'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note","Text")',
@@ -13,7 +13,7 @@ class EnquiryFormField extends DataObject {
 		'RequiredField' => 'Boolean',
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'SortOrder' => 99
 	);
 
@@ -27,7 +27,7 @@ class EnquiryFormField extends DataObject {
 		'Note' => 'Note in form'
 	);
 
-	public static $has_one = array('EnquiryPage' => 'SiteTree');
+	private static $has_one = array('EnquiryPage' => 'SiteTree');
 
 	public static $summary_fields = array('FieldName', 'Type', 'Required');
 
