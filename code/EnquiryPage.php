@@ -165,7 +165,7 @@ class EnquiryPage extends Page {
 
 class EnquiryPage_Controller extends Page_Controller {
 
-private static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'EnquiryForm'
 	);
 
