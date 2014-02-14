@@ -1,0 +1,25 @@
+{
+	"name": "axllent/silverstripe-enquiry-page",
+	"description": "Simple contact page with enquiry form",
+	"type": "silverstripe-module",
+	"homepage": "https://github.com/axllent/silverstripe-enquiry-page",
+	"keywords": [
+		"silverstripe",
+		"contact",
+		"form",
+		"email"
+	],
+	"license": "The MIT License (MIT)",
+	"authors": [
+		{
+			"name": "Ralph Slooten",
+			"homepage": "http://www.axllent.org/"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
+	},
+	"require": {
+		"silverstripe/cms": "3.1.*"
+	}
+}
