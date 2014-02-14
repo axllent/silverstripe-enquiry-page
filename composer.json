@@ -20,6 +20,7 @@
 		"issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
 	},
 	"require": {
-		"silverstripe/cms": "3.1.*"
+		"silverstripe/cms": "3.1.*",
+		"undefinedoffset/sortablegridfield": "dev-master"
 	}
 }
