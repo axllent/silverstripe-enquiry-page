@@ -19,7 +19,7 @@ class CaptchaField extends TextField {
 		);
 
 		// create link to image to display code
-		$html =  '<img src="' . _EnquiryPageBase .'/images/captcha.jpg?' . time() . '" class="customcaptcha-image" alt="CAPTCHA security code" width="60" height="24" />';
+		$html =  '<img src="' . _EnquiryPageBase .'/images/captcha.php?' . time() . '" class="customcaptcha-image" alt="CAPTCHA security code" width="60" height="24" />';
 
 		// create input field
 		$html .= $this->createTag('input', $attributes);
