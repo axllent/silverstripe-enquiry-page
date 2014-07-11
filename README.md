@@ -1,9 +1,10 @@
 Enquiry Page Module for SilverStripe 3
 ======================================
 This is a simple module to add an Enquiry Page pagetype to the CMS.
-The module uses vanilla JavaScript, so no requirements for third-party libraries
+The module uses vanilla JavaScript, so no requirements for third-party JavaScript libraries
 (ie: jQuery or MooTools). The enquiry form can be configured to add &
 order your own fields, including the following types:
+
 * **Text** (input / textarea), required or not
 * **Email** (input), required or not
 * **Select** (select field), options configurable, required or not
@@ -11,7 +12,7 @@ order your own fields, including the following types:
 * **Header** (h4), section header
 * **Note** (paragraph of text)
 
-###Other configuration option include:
+### Other configuration option include:
 * Send email to
 * Send email from (reply to will default to the first Email field in the form, or alternatively this value)
 * Email subject
@@ -20,6 +21,6 @@ order your own fields, including the following types:
 * Submit button text
 * Captcha image option (anti-spam)
 
-##Requirements
+## Requirements
 * SilverStripe 3.0 (3.0 branch) and 3.1 (3.1 branch)
 * [SortableGridField module](https://github.com/UndefinedOffset/SortableGridField)

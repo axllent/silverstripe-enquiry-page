@@ -29,7 +29,11 @@ class EnquiryFormField extends DataObject {
 
 	private static $has_one = array('EnquiryPage' => 'SiteTree');
 
-	public static $summary_fields = array('FieldName', 'Type', 'Required');
+	private static $summary_fields = array('FieldName', 'Type', 'Required');
+
+	private static $field_labels = array(
+		'FieldName' => 'Field name'
+	);
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
@@ -37,12 +41,12 @@ class EnquiryFormField extends DataObject {
 		$fields->removeByName('EnquiryPageID');
 
 		$fields->addFieldToTab('Root.Main', new DropdownField(
-			'FieldType', 'Field Type', self::$fieldtypes
+			'FieldType', 'Field type', self::$fieldtypes
 		));
 
-		$fields->addFieldToTab('Root.Main', new TextareaField('FieldOptions', 'Field Options'));
-		$fields->addFieldToTab('Root.Main', new TextField('PlaceholderText', 'Placeholder Text'));
-		$fields->addFieldToTab('Root.Main', new CheckboxField('RequiredField', 'Required Field'));
+		$fields->addFieldToTab('Root.Main', new TextareaField('FieldOptions', 'Field options'));
+		$fields->addFieldToTab('Root.Main', new TextField('PlaceholderText', 'Placeholder text'));
+		$fields->addFieldToTab('Root.Main', new CheckboxField('RequiredField', 'Required field'));
 
 		switch($this->FieldType) {
 			case 'Select':
@@ -71,7 +75,7 @@ class EnquiryFormField extends DataObject {
 				$fields->removeByName('RequiredField');
 				$fields->removeByName('FieldOptions');
 				$fields->addFieldsToTab('Root.Main', array(
-					new HeaderField('FieldOptionsInfo', 'If text is left empty then the Field Name is used', 4),
+					new HeaderField('FieldOptionsInfo', 'If text is left empty then the "Field name" is used', 4),
 					new TextareaField('FieldOptions', 'Text')
 				));
 				$fields->removeByName('PlaceholderText');

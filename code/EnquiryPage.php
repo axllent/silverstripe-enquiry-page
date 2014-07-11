@@ -23,6 +23,7 @@ class EnquiryPage extends Page {
 		'EmailSubmitButtonText' => 'Varchar(50)',
 		'EmailSubmitCompletion' => 'HTMLText',
 		'AddCaptcha' => 'Boolean',
+		'CaptchaText' => 'Varchar(50)',
 		'CaptchaHelp' => 'Varchar(100)',
 	);
 
@@ -35,7 +36,7 @@ class EnquiryPage extends Page {
 		'EmailSubject' => 'Website Enquiry',
 		'EmailSubmitButtonText' => 'Submit Enquiry',
 		'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
-		'CaptchaHelp' => 'To prevent spam, please copy the 4 digits in the image into the field next to it'
+		'CaptchaText' => 'Verification Image'
 	);
 
 	protected $usedFields = array();
@@ -91,6 +92,10 @@ class EnquiryPage extends Page {
 			This adds a small image with 4 random numbers which needs to be filled in correctly.</p>'
 		));
 		array_push($spamSettings, new DropdownField('AddCaptcha', 'Add captcha image (optional)', array(0 => 'No', 1 => 'Yes')));
+
+		if (!$this->CaptchaText) $this->CaptchaText = 'Verification Image';
+		array_push($spamSettings, new TextField('CaptchaText', 'Field name'));
+
 		array_push($spamSettings, new LiteralField('CaptchaInfo',
 			'<p>If you would like to explain what the captcha is, please explain briefly what it is. This is only used if
 			 you have selected to add the captcha image above.</p>'
@@ -117,12 +122,13 @@ class EnquiryPage extends Page {
 
 	public function validate() {
 		$valid = parent::validate();
-		if($this->EmailSubmitButtonText == '') $this->EmailSubmitButtonText = 'Submit Enquiry';
+		if ($this->EmailSubmitButtonText == '') $this->EmailSubmitButtonText = 'Submit Enquiry';
+		if ($this->CaptchaText == '') $this->CaptchaText = 'Verification Image';
 		return $valid;
 	}
 
 	public function arrayToHtml($arr) {
-		foreach($arr as $a)
+		foreach ($arr as $a)
 			$build[] = '&middot; '.trim(htmlspecialchars($a));
 		return implode("<br />\n", $build);
 	}
@@ -135,19 +141,19 @@ class EnquiryPage extends Page {
 		$elements = $this->EnquiryFormFields();
 		$templateData = array();
 		$templateData['EmailData'] = new ArrayList();
-		foreach($elements as $el){
+		foreach ($elements as $el) {
 			$key = $this->keyGen($el->FieldName, $el->SortOrder);
-			if($el->FieldType == 'Header') {
+			if ($el->FieldType == 'Header') {
 				$templateData['EmailData']->push(
 					new ArrayData(array('Header' => htmlspecialchars($el->FieldName), 'Type' => 'Header'))
 				);
 			}
-			else if(
+			else if (
 				!in_array($el->FieldType, array('Header', 'Note')) &&
 				isset($data[$key]) && $data[$key] != ''
 			) {
 				$hdr = htmlspecialchars($el->FieldName);
-				if(is_array($data[$key]))
+				if (is_array($data[$key]))
 					$value = $this->arrayToHtml($data[$key]);
 				else
 					$value = $this->dataToHtml($data[$key]);
@@ -167,32 +173,29 @@ class EnquiryPage_Controller extends Page_Controller {
 
 	private static $allowed_actions = array('EnquiryForm', 'captcha');
 
-	public function init() {
-		parent::init();
-	}
-
 	public function EnquiryForm() {
-		if(
+		if (
 			!Email::validEmailAddress($this->EmailTo) ||
 			!Email::validEmailAddress($this->EmailFrom)
 		) return false;
 
-		if(!$this->EmailSubject) $this->EmailSubject = 'Website Enquiry';
+		if (!$this->EmailSubject) $this->EmailSubject = 'Website Enquiry';
 
 		$elements = $this->EnquiryFormFields();
-		if($elements->count() == 0) return false;
+		if ($elements->count() == 0) return false;
 
 		/* Build the fieldlist */
 		$fields = new FieldList();
 		$validator = new RequiredFields();
 		$jsValidator = array();
 
-		foreach($elements as $el) {
+		foreach ($elements as $el) {
+
 			$key = $this->keyGen($el->FieldName, $el->SortOrder);
 			$field = false;
 			$type = false;
-			if($el->FieldType == 'Text') {
-				if($el->FieldOptions == 1) {
+			if ($el->FieldType == 'Text') {
+				if ($el->FieldOptions == 1) {
 					$field = new TextField($key, htmlspecialchars($el->FieldName));
 				}
 				else {
@@ -201,80 +204,91 @@ class EnquiryPage_Controller extends Page_Controller {
 				}
 			}
 
-			else if($el->FieldType == 'Email') {
+			else if ($el->FieldType == 'Email') {
 				$field = new EmailField($key, htmlspecialchars($el->FieldName));
 			}
 
-			else if($el->FieldType == 'Select') {
+			else if ($el->FieldType == 'Select') {
 				$options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-				if(count($options) > 0) {
+				if (count($options) > 0) {
 					$tmp = array();
-					foreach($options as $o)
+					foreach ($options as $o) {
 						$tmp[trim($o)] = trim($o);
+					}
 					$field = new DropdownField($key, htmlspecialchars($el->FieldName), $tmp);
 					$field->setEmptyString('[ Please Select ]');
 				}
 			}
 
-			else if($el->FieldType == 'Checkbox') {
+			else if ($el->FieldType == 'Checkbox') {
 				$options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-				if(count($options) > 0) {
+				if (count($options) > 0) {
 					$tmp = array();
-					foreach($options as $o)
+					foreach ($options as $o) {
 						$tmp[trim($o)] = trim($o);
+					}
 					$field = new CheckboxSetField($key, htmlspecialchars($el->FieldName), $tmp);
 				}
 			}
 
-			else if($el->FieldType == 'Radio') {
+			else if ($el->FieldType == 'Radio') {
 				$options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-				if(count($options) > 0) {
+				if (count($options) > 0) {
 					$tmp = array();
-					foreach($options as $o)
+					foreach ($options as $o) {
 						$tmp[trim($o)] = trim($o);
+					}
 					$field = new OptionsetField($key, htmlspecialchars($el->FieldName), $tmp);
 				}
 			}
 
-			else if($el->FieldType == 'Header') {
-				if($el->FieldOptions)
+			else if ($el->FieldType == 'Header') {
+				if ($el->FieldOptions) {
 					$field = new LiteralField(htmlspecialchars($el->FieldName),
 						'<h4>' . htmlspecialchars($el->FieldName) . '</h4>
 						<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>'
 					);
-				else
+				}
+				else {
 					$field = new HeaderField(htmlspecialchars($el->FieldName), 4);
+				}
 			}
 
-			else if($el->FieldType == 'Note') {
-				if($el->FieldOptions)
+			else if ($el->FieldType == 'Note') {
+				if ($el->FieldOptions) {
 					$field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
-				else
+				}
+				else {
 					$field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
+				}
 			}
 
-			if($field) {
-				if($el->RequiredField == 1) {
+			if ($field) {
+				if ($el->RequiredField == 1) {
 					$field->addExtraClass('required');
 					/* Add "Required" next to field" */
 					$validator->addRequiredField($key);
 					$jsValidator[$key] = $el->FieldType;
 				}
-				if($el->PlaceholderText)
+				if ($el->PlaceholderText) {
 					$field->setAttribute('placeholder', $el->PlaceholderText);
+				}
 				$fields->push($field);
 			}
 
 		}
 
-		if($this->AddCaptcha) {
-			$field = new CaptchaField('CaptchaImage', 'Verification Image');
+		if ($this->AddCaptcha) {
+			$label = $this->CaptchaLabel;
+			$field = new CaptchaField('CaptchaImage', $label);
 			$field->addExtraClass('required');
 
 			$validator->addRequiredField('CaptchaImage');
 			$jsValidator['CaptchaImage'] = 'Text';
-			if($this->CaptchaHelp)
+
+			if ($this->CaptchaHelp) {
 				$field->setRightTitle('<span id="CaptchaHelp">'.htmlspecialchars($this->CaptchaHelp).'</span>');
+			}
 
 			$fields->push($field);
 		}
@@ -299,12 +313,13 @@ class EnquiryPage_Controller extends Page_Controller {
 		$Subject = $this->EmailSubject;
 		$email = new Email($From, $To, $Subject);
 		$replyTo = $this->EnquiryFormFields()->filter(array('FieldType' => 'Email'))->First();
-		if($replyTo) {
+		if ($replyTo) {
 			$postField = $this->keyGen($replyTo->FieldName, $replyTo->SortOrder);
-			if(isset($data[$postField]) && Email::validEmailAddress($data[$postField]))
+			if (isset($data[$postField]) && Email::validEmailAddress($data[$postField])) {
 				$email->replyTo($data[$postField]);
+			}
 		}
-		if($this->EmailBcc) {
+		if ($this->EmailBcc) {
 			$email->setBcc($this->EmailBcc);
 		}
 		//abuse / tracking
@@ -339,7 +354,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		$green = imageColorAllocate($my_image, 22, 255, 2);
 		$random_colours = array($purple,$green,$black);
 		// add noise
-		for ($c = 0; $c < 150; $c++){
+		for ($c = 0; $c < 150; $c++) {
 			$x = rand(0,$width-1);
 			$y = rand(0,$height-1);
 			imagesetpixel($my_image, $x, $y, $random_colours[array_rand($random_colours)]);
@@ -347,7 +362,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		$x = rand(1,10);
 		$rand_string = rand(1000,9999);
 		$numbers = str_split($rand_string);
-		foreach ($numbers as $number){
+		foreach ($numbers as $number) {
 			$y = rand(1,10);
 			imagestring($my_image, 5, $x, $y, $number, 0x000000);
 			$x = $x+12;
@@ -358,4 +373,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		return $this->response;
 	}
 
+	public function getCaptchaLabel() {
+		return ($this->CaptchaText) ? $this->CaptchaText : 'Verification Image';
+	}
 }
