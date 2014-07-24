@@ -94,9 +94,6 @@ class EnquiryFormField extends DataObject {
 				$fields->removeByName('PlaceholderText');
 				break;
 		}
-		if (!$this->exists()) {
-			$fields->removeByName('RequiredField');
-		}
 		return $fields;
 	}
 
