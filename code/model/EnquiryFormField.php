@@ -2,7 +2,9 @@
 
 class EnquiryFormField extends DataObject {
 
-	public static $default_sort = "SortOrder ASC";
+	public static $default_sort = array(
+		'"SortOrder"' => 'ASC'
+	);
 
 	private static $db = array(
 		'SortOrder' => 'Int',
@@ -11,10 +13,6 @@ class EnquiryFormField extends DataObject {
 		'FieldOptions' => 'Text',
 		'PlaceholderText' => 'Varchar(150)',
 		'RequiredField' => 'Boolean',
-	);
-
-	private static $defaults = array(
-		'SortOrder' => 99
 	);
 
 	public static $fieldtypes = array(
