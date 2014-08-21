@@ -2,7 +2,7 @@
 
 class CaptchaField extends TextField {
 
-	function __construct($name, $title = null, $value = "", $form = null){
+	function __construct($name, $title = null, $value = '', $form = null){
 		parent::__construct($name, $title, $value, $form);
 	}
 
@@ -20,23 +20,18 @@ class CaptchaField extends TextField {
 
 		// create link to image to display code
 		$html =  '<img src="' . $this->getForm()->getController()->Link() .'captcha.jpg?' . time() . '" class="customcaptcha-image" alt="CAPTCHA security code" width="60" height="24" />';
-
 		// create input field
 		$html .= $this->createTag('input', $attributes);
 
 		return $html;
-
 	}
 
-
-	// SERVER-SIDE VALIDATION (to ensure a browser with javascript disabled doesn't bypass validation)
-
+	/*
+	 * SERVER-SIDE VALIDATION (to ensure a browser with javascript disabled doesn't bypass validation)
+	 */
 	function validate($validator){
-
 		$this->value = trim($this->value);
-
 		$SessionCaptcha = Session::get('customcaptcha');
-
 		if ( md5(trim($this->value).$_SERVER['REMOTE_ADDR']).'a4xn' != $SessionCaptcha ) {
 			$validator->validationError(
 				$this->name,
@@ -44,6 +39,6 @@ class CaptchaField extends TextField {
 				'required'
 			);
 		}
-
 	}
+
 }
