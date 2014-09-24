@@ -11,9 +11,9 @@
 
 class EnquiryPage extends Page {
 
-	static $icon = 'silverstripe-enquiry-page/images/EnquiryPage.png';
+	public static $icon = 'silverstripe-enquiry-page/images/EnquiryPage.png';
 
-	static $description = 'Page with an editable contact form';
+	public static $description = 'Page with an editable contact form';
 
 	private static $db = array(
 		'EmailTo' => 'Varchar(254)',
@@ -40,6 +40,7 @@ class EnquiryPage extends Page {
 	);
 
 	protected $usedFields = array();
+
 	protected $usedFieldCounter = 0;
 
 	public function getCMSFields() {
@@ -115,8 +116,13 @@ class EnquiryPage extends Page {
 
 	public function validate() {
 		$valid = parent::validate();
-		if ($this->EmailSubmitButtonText == '') $this->EmailSubmitButtonText = 'Submit Enquiry';
-		if ($this->CaptchaText == '') $this->CaptchaText = 'Verification Image';
+
+		if ($this->EmailSubmitButtonText == '')
+			$this->EmailSubmitButtonText = 'Submit Enquiry';
+
+		if ($this->CaptchaText == '')
+			$this->CaptchaText = 'Verification Image';
+
 		return $valid;
 	}
 
@@ -172,10 +178,13 @@ class EnquiryPage_Controller extends Page_Controller {
 			!Email::validEmailAddress($this->EmailFrom)
 		) return false;
 
-		if (!$this->EmailSubject) $this->EmailSubject = 'Website Enquiry';
+		if (!$this->EmailSubject)
+			$this->EmailSubject = 'Website Enquiry';
 
 		$elements = $this->EnquiryFormFields();
-		if ($elements->count() == 0) return false;
+
+		if ($elements->count() == 0)
+			return false;
 
 		/* Build the fieldlist */
 		$fields = new FieldList();
@@ -325,7 +334,7 @@ class EnquiryPage_Controller extends Page_Controller {
 		//send mail
 		$email->send();
 		//return to submitted message
-		$this->redirect($this->Link("?success#thankyou"));
+		$this->redirect($this->Link("?success=1#thankyou"));
 	}
 
 	public function Success() {
