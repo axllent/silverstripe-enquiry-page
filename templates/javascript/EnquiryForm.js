@@ -47,7 +47,11 @@ function validateEnquiryForm() {
 
 function initEnquiryFormValidator() {
 	if(EnquiryFormValidator && document.getElementById('Form_EnquiryForm')) {
-		document.getElementById('Form_EnquiryForm').onsubmit=validateEnquiryForm;
+		var f = document.getElementById('Form_EnquiryForm');
+		f.onsubmit=validateEnquiryForm;
+		if (f.querySelector && f.querySelector('.message.required') && f.scrollIntoView) {
+			f.scrollIntoView();
+		}
 	}
 }
 
