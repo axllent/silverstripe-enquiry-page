@@ -49,7 +49,7 @@ class EnquiryPage extends Page {
 		$fields->addFieldToTab('Root.EnquiryForm', new HeaderField('Enquiry Form Setup', 2));
 
 
-		$gridFieldConfig = GridFieldConfig_RecordEditor::create();
+		$gridFieldConfig = GridFieldConfig_RecordEditor::create(100);
 		$gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));
 
 		/* Unset sorting hack */
