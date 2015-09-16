@@ -1,7 +1,7 @@
 $Content
 $Form
 <% if $Success %>
-<div class="EnquiryPageSuccess" id="thankyou">$EmailSubmitCompletion</div>
+	<div class="EnquiryPageSuccess" id="thankyou">$EmailSubmitCompletion</div>
 <% else %>
-$EnquiryForm
+	$EnquiryForm
 <% end_if %>

@@ -334,6 +334,9 @@ class EnquiryPage_Controller extends Page_Controller {
 		//send mail
 		$email->send();
 		//return to submitted message
+		if (Director::is_ajax()) {
+			return $this->renderWith('EnquiryPageAjaxSuccess');
+		}
 		$this->redirect($this->Link("?success=1#thankyou"));
 	}
 
