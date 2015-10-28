@@ -13,6 +13,7 @@ class CaptchaField extends TextField {
 			'id' => $this->id(),
 			'name' => $this->getName(),
 			'value' => $this->Value(),
+			'required' => 'required',
 			'tabindex' => $this->getAttribute("tabindex"),
 			'maxlength' => 4,
 			'size' => 30
