@@ -19,7 +19,8 @@ class CaptchaField extends TextField
             'required' => 'required',
             'tabindex' => $this->getAttribute("tabindex"),
             'maxlength' => 4,
-            'size' => 30
+            'size' => 30,
+            'autocomplete' => 'off'
         );
 
         // create link to image to display code
@@ -43,6 +44,7 @@ class CaptchaField extends TextField
                 'Codes do not match, please try again',
                 'required'
             );
+            $this->value = '';
         }
     }
 }
