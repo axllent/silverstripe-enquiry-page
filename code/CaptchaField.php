@@ -17,10 +17,11 @@ class CaptchaField extends TextField
             'name' => $this->getName(),
             'value' => $this->Value(),
             'required' => 'required',
-            'tabindex' => $this->getAttribute("tabindex"),
+            'tabindex' => $this->getAttribute('tabindex'),
             'maxlength' => 4,
             'size' => 30,
-            'autocomplete' => 'off'
+            'autocomplete' => 'off',
+            'type' => 'number'
         );
 
         // create link to image to display code
@@ -38,7 +39,7 @@ class CaptchaField extends TextField
     {
         $this->value = trim($this->value);
         $SessionCaptcha = Session::get('customcaptcha');
-        if (md5(trim($this->value).$_SERVER['REMOTE_ADDR']).'a4xn' != $SessionCaptcha) {
+        if (md5(trim($this->value) . $_SERVER['REMOTE_ADDR']) . 'a4xn' != $SessionCaptcha) {
             $validator->validationError(
                 $this->name,
                 'Codes do not match, please try again',
