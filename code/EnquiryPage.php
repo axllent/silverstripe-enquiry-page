@@ -48,61 +48,61 @@ class EnquiryPage extends Page
     {
         $fields = parent::getCMSFields();
 
-        $fields->addFieldToTab('Root.EnquiryForm', new HeaderField('Enquiry Form Setup', 2));
+        $fields->addFieldToTab('Root.EnquiryForm', HeaderField::create('Enquiry Form Setup', 2));
 
 
         $gridFieldConfig = GridFieldConfig_RecordEditor::create(100);
         $gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));
 
-        /* Unset sorting hack */
+        /* Unset field-sorting hack */
         $gridFieldConfig->getComponentByType('GridFieldSortableHeader')->setFieldSorting(
             array('FieldName'=>'FieldNameNoSorting', 'FieldType' => 'FieldTypeNoSorting')
         );
 
-        $gridField = new GridField('EnquiryFormFields', false, $this->EnquiryFormFields(), $gridFieldConfig);
+        $gridField = GridField::create('EnquiryFormFields', false, $this->EnquiryFormFields(), $gridFieldConfig);
         $fields->addFieldToTab('Root.EnquiryForm', $gridField);
 
-        $emailSettings = array();
-        array_push($emailSettings, new EmailField('EmailTo', 'Send email to'));
-        array_push($emailSettings, new EmailField('EmailFrom', 'Send email from'));
-        array_push($emailSettings, new TextField('EmailSubject', 'Email subject'));
-        array_push($emailSettings, new HeaderField('Message on website once completed', 5));
-        $editor = new HTMLEditorField('EmailSubmitCompletion', '');
-        $editor->setRows(10);
-        array_push($emailSettings, $editor);
-        array_push($emailSettings, new LiteralField('BccHdr',
-            '<p>If you would like a copy of the enquiry to be sent elsewhere, fill that in here.</p>'
-        ));
-        array_push($emailSettings, new EmailField('EmailBcc', 'Send BCC copy to (optional)'));
-        array_push($emailSettings, new TextField('EmailSubmitButtonText', 'Submit button text'));
+        $email_settings = array(
+            EmailField::create('EmailTo', 'Send email to'),
+            EmailField::create('EmailFrom', 'Send email from')
+                ->setRightTitle('For example website@yourdomain.com'),
+            TextField::create('EmailSubject', 'Email subject'),
+            HeaderField::create('Message on website once completed', 5),
+            HTMLEditorField::create('EmailSubmitCompletion', '')
+                ->setRows(10),
+            EmailField::create('EmailBcc', 'Send BCC copy to (optional)')
+                ->setRightTitle('If you would like a copy of the enquiry to be sent elsewhere, fill that in here.'),
+            TextField::create('EmailSubmitButtonText', 'Submit button text')
+        );
 
         $toggleSettings = ToggleCompositeField::create('FormSettings', 'Enquiry Form Settings',
-            $emailSettings
-        )->setHeadingLevel(5);
+            $email_settings
+        );
 
         $fields->addFieldsToTab('Root.EnquiryForm', $toggleSettings);
 
-        $spamSettings = array();
-        array_push($spamSettings, new LiteralField('SpamHdr',
-            '<p>You can optionally enable an anti-spam "captcha" image.
-			This adds a small image with 4 random numbers which needs to be filled in correctly.</p>'
-        ));
-        array_push($spamSettings, new DropdownField('AddCaptcha', 'Add captcha image (optional)', array(0 => 'No', 1 => 'Yes')));
+        $spam_settings = array();
+
+        array_push($spam_settings,
+            DropdownField::create('AddCaptcha', 'Add captcha image (optional)', array(0 => 'No', 1 => 'Yes'))
+                ->setRightTitle('You can optionally enable an anti-spam "captcha" image.
+			             This adds a small image with 4 random numbers which needs to be filled in correctly.')
+        );
 
         if (!$this->CaptchaText) {
             $this->CaptchaText = 'Verification Image';
         }
-        array_push($spamSettings, new TextField('CaptchaText', 'Field name'));
+        array_push($spam_settings, TextField::create('CaptchaText', 'Field name'));
 
-        array_push($spamSettings, new LiteralField('CaptchaInfo',
-            '<p>If you would like to explain what the captcha is, please explain briefly what it is. This is only used if
-			 you have selected to add the captcha image above.</p>'
-        ));
-        array_push($spamSettings, new TextField('CaptchaHelp', 'Captcha help (optional)'));
+        array_push($spam_settings,
+            TextField::create('CaptchaHelp', 'Captcha help (optional)')
+                ->setRightTitle('If you would like to explain what the captcha is, please explain briefly what it is.
+                    This is only used if you have selected to add the captcha image.')
+        );
 
         $toggleSpam = ToggleCompositeField::create('SpamSettings', 'Anti-Spam Settings',
-            $spamSettings
-        )->setHeadingLevel(5);
+            $spam_settings
+        );
 
         $fields->addFieldsToTab('Root.EnquiryForm', $toggleSpam);
 
@@ -151,12 +151,12 @@ class EnquiryPage extends Page
     {
         $elements = $this->EnquiryFormFields();
         $templateData = array();
-        $templateData['EmailData'] = new ArrayList();
+        $templateData['EmailData'] = ArrayList::create();
         foreach ($elements as $el) {
             $key = $this->keyGen($el->FieldName, $el->SortOrder);
             if ($el->FieldType == 'Header') {
                 $templateData['EmailData']->push(
-                    new ArrayData(array('Header' => htmlspecialchars($el->FieldName), 'Type' => 'Header'))
+                    ArrayData::create(array('Header' => htmlspecialchars($el->FieldName), 'Type' => 'Header'))
                 );
             } elseif (
                 !in_array($el->FieldType, array('Header', 'Note')) &&
@@ -170,7 +170,7 @@ class EnquiryPage extends Page
                 }
 
                 $templateData['EmailData']->push(
-                    new ArrayData(array('Header' => $hdr, 'Value' => $value, 'Type' => $el->FieldType))
+                    ArrayData::create(array('Header' => $hdr, 'Value' => $value, 'Type' => $el->FieldType))
                 );
             }
         }
@@ -199,13 +199,14 @@ class EnquiryPage_Controller extends Page_Controller
 
         $elements = $this->EnquiryFormFields();
 
+        /* empty form, return nothing */
         if ($elements->count() == 0) {
             return false;
         }
 
         /* Build the fieldlist */
-        $fields = new FieldList();
-        $validator = new RequiredFields();
+        $fields = FieldList::create();
+        $validator = RequiredFields::create();
         $jsValidator = array();
 
         foreach ($elements as $el) {
@@ -214,13 +215,13 @@ class EnquiryPage_Controller extends Page_Controller
             $type = false;
             if ($el->FieldType == 'Text') {
                 if ($el->FieldOptions == 1) {
-                    $field = new TextField($key, htmlspecialchars($el->FieldName));
+                    $field = TextField::create($key, htmlspecialchars($el->FieldName));
                 } else {
-                    $field = new TextareaField($key, htmlspecialchars($el->FieldName));
+                    $field = TextareaField::create($key, htmlspecialchars($el->FieldName));
                     $field->setRows($el->FieldOptions);
                 }
             } elseif ($el->FieldType == 'Email') {
-                $field = new EmailField($key, htmlspecialchars($el->FieldName));
+                $field = EmailField::create($key, htmlspecialchars($el->FieldName));
             } elseif ($el->FieldType == 'Select') {
                 $options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
                 if (count($options) > 0) {
@@ -228,7 +229,7 @@ class EnquiryPage_Controller extends Page_Controller
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
                     }
-                    $field = new DropdownField($key, htmlspecialchars($el->FieldName), $tmp);
+                    $field = DropdownField::create($key, htmlspecialchars($el->FieldName), $tmp);
                     $field->setEmptyString('[ Please Select ]');
                 }
             } elseif ($el->FieldType == 'Checkbox') {
@@ -238,7 +239,7 @@ class EnquiryPage_Controller extends Page_Controller
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
                     }
-                    $field = new CheckboxSetField($key, htmlspecialchars($el->FieldName), $tmp);
+                    $field = CheckboxSetField::create($key, htmlspecialchars($el->FieldName), $tmp);
                 }
             } elseif ($el->FieldType == 'Radio') {
                 $options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
@@ -247,22 +248,22 @@ class EnquiryPage_Controller extends Page_Controller
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
                     }
-                    $field = new OptionsetField($key, htmlspecialchars($el->FieldName), $tmp);
+                    $field = OptionsetField::create($key, htmlspecialchars($el->FieldName), $tmp);
                 }
             } elseif ($el->FieldType == 'Header') {
                 if ($el->FieldOptions) {
-                    $field = new LiteralField(htmlspecialchars($el->FieldName),
+                    $field = LiteralField::create(htmlspecialchars($el->FieldName),
                         '<h4>' . htmlspecialchars($el->FieldName) . '</h4>
 						<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>'
                     );
                 } else {
-                    $field = new HeaderField(htmlspecialchars($el->FieldName), 4);
+                    $field = HeaderField::create(htmlspecialchars($el->FieldName), 4);
                 }
             } elseif ($el->FieldType == 'Note') {
                 if ($el->FieldOptions) {
-                    $field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
+                    $field = LiteralField::create(htmlspecialchars($el->FieldName), '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
                 } else {
-                    $field = new LiteralField(htmlspecialchars($el->FieldName), '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
+                    $field = LiteralField::create(htmlspecialchars($el->FieldName), '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
                 }
             }
 
@@ -282,7 +283,7 @@ class EnquiryPage_Controller extends Page_Controller
 
         if ($this->AddCaptcha) {
             $label = $this->CaptchaLabel;
-            $field = new CaptchaField('CaptchaImage', $label);
+            $field = CaptchaField::create('CaptchaImage', $label);
             $field->addExtraClass('required');
 
             $validator->addRequiredField('CaptchaImage');
@@ -295,16 +296,16 @@ class EnquiryPage_Controller extends Page_Controller
             $fields->push($field);
         }
 
-        $actions = new FieldList(
-            new FormAction('SendEnquiryForm', $this->EmailSubmitButtonText)
+        $actions = FieldList::create(
+            FormAction::create('SendEnquiryForm', $this->EmailSubmitButtonText)
         );
 
-        Requirements::customScript("var EnquiryFormValidator=".json_encode($jsValidator).';');
+        Requirements::customScript('var EnquiryFormValidator='.json_encode($jsValidator).';');
         Requirements::javascript(
-            basename(dirname(dirname(__FILE__))) . "/templates/javascript/EnquiryForm.js"
+            basename(dirname(dirname(__FILE__))) . '/templates/javascript/EnquiryForm.js'
         );
 
-        $form = new Form($this, 'EnquiryForm', $fields, $actions, $validator);
+        $form = Form::create($this, 'EnquiryForm', $fields, $actions, $validator);
         return $form;
     }
 
@@ -338,7 +339,7 @@ class EnquiryPage_Controller extends Page_Controller
         if (Director::is_ajax()) {
             return $this->renderWith('EnquiryPageAjaxSuccess');
         }
-        $this->redirect($this->Link("?success=1#thankyou"));
+        $this->redirect($this->Link('?success=1#thankyou'));
     }
 
     public function Success()
@@ -346,8 +347,8 @@ class EnquiryPage_Controller extends Page_Controller
         return isset($_GET['success']);
     }
 
-    /*
-     * Captcha image
+    /**
+     * Captcha image generated on the fly
      */
     public function captcha()
     {
