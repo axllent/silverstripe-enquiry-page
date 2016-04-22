@@ -12,14 +12,14 @@ order your own fields, including the following types:
 * **Header** (h4), section header
 * **Note** (paragraph of text)
 
-### Other configuration option include:
+## Configuration option include:
 * Send email to
-* Send email from (reply to will default to the first Email field in the form, or alternatively this value)
+* Send email from (the "reply to" will default to the first Email field in the form, or alternatively this value)
 * Email subject
 * Message once completed
 * BCC messages
 * Submit button text
-* Captcha image option (anti-spam)
+* Optional built-in captcha image (anti-spam)
 
 ## Requirements
 * SilverStripe >=3.1
