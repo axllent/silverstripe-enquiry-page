@@ -92,8 +92,13 @@
   margin: 0;
   padding: 5px 0;
 }
-#Form_EnquiryForm_CaptchaImage_Holder input[type="text"] {
+#Form_EnquiryForm_CaptchaImage_Holder input {
   width: 60px;
+  -moz-appearance: textfield;
+}
+#Form_EnquiryForm_CaptchaImage_Holder input::-webkit-outer-spin-button,
+#Form_EnquiryForm_CaptchaImage_Holder input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
 #Form_EnquiryForm_CaptchaImage_Holder img {
   margin-right: 5px;
