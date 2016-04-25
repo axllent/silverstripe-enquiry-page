@@ -18,7 +18,6 @@ class CaptchaField extends TextField
             'value' => $this->Value(),
             'required' => 'required',
             'tabindex' => $this->getAttribute('tabindex'),
-            'maxlength' => 4,
             'size' => 30,
             'autocomplete' => 'off',
             'type' => 'number'
