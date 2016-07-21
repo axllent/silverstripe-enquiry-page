@@ -3,32 +3,26 @@
 class CaptchaField extends TextField
 {
 
-    public function __construct($name, $title = null, $value = '', $form = null)
+    /**
+     * @return array
+     */
+    public function getAttributes()
     {
-        parent::__construct($name, $title, $value, $form);
+        $attributes = [];
+
+        $attributes['type'] = 'number';
+        $attributes['autocomplete'] = 'off';
+        $attributes['required'] = 'required';
+
+        return array_merge(
+            parent::getAttributes(),
+            $attributes
+        );
     }
 
-    public function Field($properties = array())
+    public function validationImageURL()
     {
-        $attributes = array(
-            'type' => 'text',
-            'class' => 'CaptchaField',
-            'id' => $this->id(),
-            'name' => $this->getName(),
-            'value' => $this->Value(),
-            'required' => 'required',
-            'tabindex' => $this->getAttribute('tabindex'),
-            'size' => 30,
-            'autocomplete' => 'off',
-            'type' => 'number'
-        );
-
-        // create link to image to display code
-        $html =  '<img src="' . $this->getForm()->getController()->Link() .'captcha.jpg?' . time() . '" class="customcaptcha-image" alt="CAPTCHA security code" width="60" height="24" />';
-        // create input field
-        $html .= $this->createTag('input', $attributes);
-
-        return $html;
+        return $this->getForm()->getController()->Link() .'captcha.jpg?' . time();
     }
 
     /*
