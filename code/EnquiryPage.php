@@ -268,6 +268,16 @@ class EnquiryPage_Controller extends Page_Controller
             }
 
             if ($field) {
+                /* Allow using $_GET to pre-populate fields */
+                $request = $this->request;
+                if (
+                    !$request->isPOST() &&
+                    !$field->Value() &&
+                    null != $request->getVar($el->FieldName)
+                ) {
+                    $field->setValue($request->getVar($el->FieldName));
+                }
+
                 if ($el->RequiredField == 1) {
                     $field->addExtraClass('required');
                     /* Add "Required" next to field" */
