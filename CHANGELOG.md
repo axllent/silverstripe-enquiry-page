@@ -2,6 +2,10 @@
 
 Notable changes to this project will be documented in this file.
 
+## [1.1.4]
+
+- Use FileNameFilter for $_GET parameters
+
 ## [1.1.3]
 
 - Allow fields to be set with $_GET values

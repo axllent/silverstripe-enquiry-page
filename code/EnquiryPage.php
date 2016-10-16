@@ -209,6 +209,9 @@ class EnquiryPage_Controller extends Page_Controller
         $validator = RequiredFields::create();
         $jsValidator = array();
 
+        /* Create filter for possible $_GET parameters / pre-population */
+        $get_param_filter = FileNameFilter::create();
+
         foreach ($elements as $el) {
             $key = $this->keyGen($el->FieldName, $el->SortOrder);
             $field = false;
@@ -268,14 +271,15 @@ class EnquiryPage_Controller extends Page_Controller
             }
 
             if ($field) {
-                /* Allow using $_GET to pre-populate fields */
+                /* Allow $_GET parameters to pre-populate fields */
                 $request = $this->request;
+                $get_var = $get_param_filter->filter($el->FieldName);
                 if (
                     !$request->isPOST() &&
                     !$field->Value() &&
-                    null != $request->getVar($el->FieldName)
+                    null != $request->getVar($get_var)
                 ) {
-                    $field->setValue($request->getVar($el->FieldName));
+                    $field->setValue($request->getVar($get_var));
                 }
 
                 if ($el->RequiredField == 1) {
