@@ -314,10 +314,12 @@ class EnquiryPage_Controller extends Page_Controller
             FormAction::create('SendEnquiryForm', $this->EmailSubmitButtonText)
         );
 
-        Requirements::customScript('var EnquiryFormValidator='.json_encode($jsValidator).';');
-        Requirements::javascript(
-            basename(dirname(dirname(__FILE__))) . '/templates/javascript/EnquiryForm.js'
-        );
+        if (Config::inst()->get('EnquiryPage', 'js_validation')) {
+            Requirements::customScript('var EnquiryFormValidator='.json_encode($jsValidator).';');
+            Requirements::javascript(
+                basename(dirname(dirname(__FILE__))) . '/javascript/enquiryform.js'
+            );
+        }
 
         $form = Form::create($this, 'EnquiryForm', $fields, $actions, $validator);
         return $form;

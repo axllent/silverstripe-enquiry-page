@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [1.1.5]
+
+- Add yaml configuration to disable built-in JS validation
+- Improved JS email validation
+
 ## [1.1.4]
 
 - Use FileNameFilter for $_GET parameters

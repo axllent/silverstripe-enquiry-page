@@ -6,8 +6,8 @@ function validateEnquiryForm() {
 		elItem.className = elItem.className.replace(/\binvalid\b/,'');
 		if (e[el] == 'Email') { // Email
 			var elValue = elItem.value.replace(/^\s+|\s+$/g, ''); // trim
-			validRegExp = /^[_a-z0-9-+]+(\.[_a-z0-9-+]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i;
-			if (elValue == '' || elValue.search(validRegExp) == -1) {
+			validRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			if (elValue == '' || !validRegExp.test(elValue)) {
 				elValue = false;
 			}
 		}
