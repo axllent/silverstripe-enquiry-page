@@ -40,26 +40,26 @@ class EnquiryFormField extends DataObject
         $fields->removeByName('SortOrder');
         $fields->removeByName('EnquiryPageID');
 
-        $fields->addFieldToTab('Root.Main', new DropdownField(
+        $fields->addFieldToTab('Root.Main', DropdownField::create(
             'FieldType', 'Field type', self::$fieldtypes
         ));
 
-        $fields->addFieldToTab('Root.Main', new TextareaField('FieldOptions', 'Field options'));
-        $fields->addFieldToTab('Root.Main', new TextField('PlaceholderText', 'Placeholder text'));
-        $fields->addFieldToTab('Root.Main', new CheckboxField('RequiredField', 'Required field'));
+        $fields->addFieldToTab('Root.Main', TextareaField::create('FieldOptions', 'Field options'));
+        $fields->addFieldToTab('Root.Main', TextField::create('PlaceholderText', 'Placeholder text'));
+        $fields->addFieldToTab('Root.Main', CheckboxField::create('RequiredField', 'Required field'));
 
         switch ($this->FieldType) {
             case 'Select':
-                $fields->addFieldToTab('Root.Main', new HeaderField('Add select options below (one per line):', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('Add select options below (one per line):', 4), 'FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Checkbox':
-                $fields->addFieldToTab('Root.Main', new HeaderField('Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Radio':
-                $fields->addFieldToTab('Root.Main', new HeaderField('Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Header':
@@ -67,22 +67,22 @@ class EnquiryFormField extends DataObject
                 $fields->removeByName('FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 $fields->addFieldsToTab('Root.Main', array(
-                    new HeaderField('FieldOptionsInfo', 'Optional text below header.', 4),
-                    new TextareaField('FieldOptions', 'Text')
+                    HeaderField::create('FieldOptionsInfo', 'Optional text below header.', 4),
+                    TextareaField::create('FieldOptions', 'Text')
                 ));
                 break;
             case 'Note':
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('FieldOptions');
                 $fields->addFieldsToTab('Root.Main', array(
-                    new HeaderField('FieldOptionsInfo', 'If text is left empty then the "Field name" is used', 4),
-                    new TextareaField('FieldOptions', 'Text')
+                    HeaderField::create('FieldOptionsInfo', 'If text is left empty then the "Field name" is used', 4),
+                    TextareaField::create('FieldOptions', 'Text')
                 ));
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Text':
                 $fields->removeByName('FieldOptions');
-                $rows = new NumericField('FieldOptions', 'Number of rows');
+                $rows = NumericField::create('FieldOptions', 'Number of rows');
                 $rows->value = 1;
                 $fields->addFieldToTab('Root.Main', $rows, 'PlaceholderText');
                 break;
