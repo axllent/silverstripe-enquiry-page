@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.0.0]
+
+- Rewrite for SilverStripe 4
+- Namespacing
+
 ## [1.1.5]
 
 - Add yaml configuration to disable built-in JS validation

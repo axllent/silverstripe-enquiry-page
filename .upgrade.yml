@@ -1,0 +1,5 @@
+mappings:
+  EnquiryPage: Axllent\EnquiryPage\EnquiryPage
+  EnquiryPage_Controller: Axllent\EnquiryPage\EnquiryPageController
+  CaptchaField: Axllent\EnquiryPage\Forms\CaptchaField
+  EnquiryFormField: Axllent\EnquiryPage\Model\EnquiryFormField

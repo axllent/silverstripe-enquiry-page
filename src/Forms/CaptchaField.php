@@ -1,8 +1,13 @@
 <?php
 
+namespace Axllent\EnquiryPage\Forms;
+
+use SilverStripe\Control\Session;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\TextField;
+
 class CaptchaField extends TextField
 {
-
     /**
      * @return array
      */
@@ -31,8 +36,10 @@ class CaptchaField extends TextField
     public function validate($validator)
     {
         $this->value = trim($this->value);
-        $SessionCaptcha = Session::get('customcaptcha');
-        if (md5(trim($this->value) . $_SERVER['REMOTE_ADDR']) . 'a4xn' != $SessionCaptcha) {
+        $session_captcha = Session::get('customcaptcha');
+        if (md5(trim($this->value) . $_SERVER['REMOTE_ADDR']) .
+            Config::inst()->get('Axllent\EnquiryPage\EnquiryPage', 'random_string') != $session_captcha
+        ) {
             $validator->validationError(
                 $this->name,
                 'Codes do not match, please try again',

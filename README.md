@@ -1,15 +1,17 @@
-# Enquiry Page Module for SilverStripe 3
+# Enquiry Page Module for SilverStripe 4
 
 This is a simple module to add an Enquiry Page pagetype to the CMS. The module uses optional JavaScript form validation,
 so no requirements for third-party JavaScript libraries (ie: jQuery or MooTools). The enquiry form can be configured to
 add & order your own fields, including the following types:
 
-- **Text** (input / textarea), required or not
-- **Email** (input), required or not
-- **Select** (select field), options configurable, required or not
-- **Checkbox** (checkbox), options configurable
-- **Header** (h4), section header
+- **Text** (TextField/TextAreaField)
+- **Email** (TextField)
+- **Select** (DropdownField), options configurable
+- **Checkbox** (CheckboxSetField), options configurable
+- **Options** (OptionsetField), options configurable
+- **Header** (h4), section header with optional paragraph of text below
 - **Note** (paragraph of text)
+
 
 ## Configuration options include:
 
@@ -17,19 +19,41 @@ add & order your own fields, including the following types:
 - Send email from (the "reply to" will default to the first Email field in the form, or alternatively this value)
 - Email subject
 - Message once completed
-- BCC messages
+- BCC copy
 - Submit button text
-- Optional built-in captcha image (anti-spam)
+- Optional built-in captcha image
 
-## Disable JavaScript validation
-If you wisht o turn off the built-in JavaScript validation, then this can be added to your site's YAML config:
+
+## Captcha Image
+
+A randomly-generated captcha image can be easily enabled in the form via the CMS. By default it will produce a 4-digit
+image 60x30px with an input field next to it. If you wish to change the height of the image (eg: to match boostrap input
+styling), you can configure this in your YAML:
 
 ```
-EnquiryPage:
-  js_validation: false
+Axllent\EnquiryPage\EnquiryPage:
+  captcha_img_height: 35
+```
+
+Please note that the height should be no less than 20 (else the numbers may not be displayed properly).
+
+
+## JavaScript validation
+If you wish to turn on the built-in JavaScript validation, then this can be added to your site's YAML config:
+
+```
+Axllent\EnquiryPage\EnquiryPage:
+  js_validation: true
 ```
 
 ## Requirements
 
-- SilverStripe >=3.1
+- SilverStripe ^4
 - [SortableGridField](https://github.com/UndefinedOffset/SortableGridField)
+
+
+## Installation
+
+```shell
+composer require axllent/silverstripe-enquiry-page
+```

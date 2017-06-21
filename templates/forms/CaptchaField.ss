@@ -1,1 +1,0 @@
-<img src="$ValidationImageURL" class="customcaptcha-image" alt="CAPTCHA security code" width="60" height="24" /><input $AttributesHTML />

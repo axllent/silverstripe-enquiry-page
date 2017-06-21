@@ -1,22 +1,35 @@
 <?php
 
+namespace Axllent\EnquiryPage\Model;
+
+use Axllent\EnquiryPage\EnquiryPage;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\EmailField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
+
 class EnquiryFormField extends DataObject
 {
+    private static $table_name = 'EnquiryFormField';
 
-    public static $default_sort = array(
+    public static $default_sort = [
         '"SortOrder"' => 'ASC'
-    );
+    ];
 
-    private static $db = array(
+    private static $db = [
         'SortOrder' => 'Int',
         'FieldName' => 'Varchar(150)',
         'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note","Text")',
         'FieldOptions' => 'Text',
         'PlaceholderText' => 'Varchar(150)',
         'RequiredField' => 'Boolean',
-    );
+    ];
 
-    public static $fieldtypes = array(
+    public static $fieldtypes = [
         'Text' => 'Text field',
         'Email' => 'Email field',
         'Select' => 'Select - Dropdown select field',
@@ -24,15 +37,21 @@ class EnquiryFormField extends DataObject
         'Radio' => 'Radio - single tick option',
         'Header' => 'Header in the form',
         'Note' => 'Note in form'
-    );
+    ];
 
-    private static $has_one = array('EnquiryPage' => 'SiteTree');
+    private static $has_one = [
+        'EnquiryPage' => EnquiryPage::class
+    ];
 
-    private static $summary_fields = array('FieldName', 'Type', 'Required');
+    private static $summary_fields = [
+        'FieldName',
+        'Type',
+        'Required'
+    ];
 
-    private static $field_labels = array(
+    private static $field_labels = [
         'FieldName' => 'Field name'
-    );
+    ];
 
     public function getCMSFields()
     {
@@ -48,36 +67,38 @@ class EnquiryFormField extends DataObject
         $fields->addFieldToTab('Root.Main', TextField::create('PlaceholderText', 'Placeholder text'));
         $fields->addFieldToTab('Root.Main', CheckboxField::create('RequiredField', 'Required field'));
 
+        $hdrcnt = 0;
+
         switch ($this->FieldType) {
             case 'Select':
-                $fields->addFieldToTab('Root.Main', HeaderField::create('Add select options below (one per line):', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add select options below (one per line):', 4), 'FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Checkbox':
-                $fields->addFieldToTab('Root.Main', HeaderField::create('Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Radio':
-                $fields->addFieldToTab('Root.Main', HeaderField::create('Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
+                $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Header':
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('FieldOptions');
                 $fields->removeByName('PlaceholderText');
-                $fields->addFieldsToTab('Root.Main', array(
+                $fields->addFieldsToTab('Root.Main', [
                     HeaderField::create('FieldOptionsInfo', 'Optional text below header.', 4),
                     TextareaField::create('FieldOptions', 'Text')
-                ));
+                ]);
                 break;
             case 'Note':
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('FieldOptions');
-                $fields->addFieldsToTab('Root.Main', array(
+                $fields->addFieldsToTab('Root.Main', [
                     HeaderField::create('FieldOptionsInfo', 'If text is left empty then the "Field name" is used', 4),
                     TextareaField::create('FieldOptions', 'Text')
-                ));
+                ]);
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Text':
@@ -104,7 +125,7 @@ class EnquiryFormField extends DataObject
 
     public function getRequired()
     {
-        if (in_array($this->FieldType, array('Header', 'Note'))) {
+        if (in_array($this->FieldType, ['Header', 'Note'])) {
             return false;
         }
         return $this->RequiredField ? 'Yes' : 'No';
@@ -132,30 +153,12 @@ class EnquiryFormField extends DataObject
     {
         parent::onBeforeWrite();
         $this->FieldName = trim($this->FieldName);
-        if (in_array($this->FieldType, array('Radio'))) {
+        if ($this->FieldType == 'Radio') {
             $this->PlaceholderText = '';
-        } elseif (!in_array($this->FieldType, array('Text', 'Email', 'Select'))) {
+        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select'])) {
             $this->RequiredField = 0;
             $this->PlaceholderText = '';
         }
-    }
-
-    /* Permissions */
-    public function canView($member = null)
-    {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    public function canEdit($member = null)
-    {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    public function canDelete($member = null)
-    {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    public function canCreate($member = null)
-    {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
     }
 
     public function getTitle()
