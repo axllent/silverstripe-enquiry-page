@@ -2,6 +2,10 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.0.1]
+
+- New Session methods to support SilverStripe 4.0.0-beta1
+
 ## [2.0.0]
 
 - Rewrite for SilverStripe 4
