@@ -28,7 +28,6 @@ use SilverStripe\View\Requirements;
 
 class EnquiryPageController extends PageController
 {
-
     private static $allowed_actions = [
         'EnquiryForm',
         'captcha'
@@ -222,7 +221,7 @@ class EnquiryPageController extends PageController
     /**
      * Captcha image generated on the fly
      */
-    public function captcha()
+    public function captcha($request)
     {
         $this->response = new HTTPResponse();
         $this->response->addHeader('Content-Type', 'image/jpeg');
@@ -248,7 +247,7 @@ class EnquiryPageController extends PageController
             imagestring($my_image, 5, $x, $y, $number, 0x000000);
             $x = $x+12;
         }
-        Session::set('customcaptcha', md5($rand_string.$_SERVER['REMOTE_ADDR']) . Config::inst()->get('Axllent\EnquiryPage\EnquiryPage', 'random_string'));
+        $request->getSession()->set('customcaptcha', md5($rand_string.$_SERVER['REMOTE_ADDR']) . Config::inst()->get('Axllent\EnquiryPage\EnquiryPage', 'random_string'));
         $this->response->setBody(imagejpeg($my_image));
         imagedestroy($my_image);
         return $this->response;
