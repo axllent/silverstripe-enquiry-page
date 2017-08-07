@@ -40,7 +40,7 @@ class EnquiryPage extends Page
 
     private static $icon = 'silverstripe-enquiry-page/images/EnquiryPage.png';
 
-    public static $description = 'Page with an editable contact form';
+    private static $description = 'Page with an editable contact form';
 
     private static $db = [
         'EmailTo' => 'Varchar(254)',
@@ -72,9 +72,6 @@ class EnquiryPage extends Page
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        // $fields->addFieldToTab('Root.EnquiryForm', HeaderField::create('EFSetup', 'Enquiry Form Setup'));
-
 
         $gridFieldConfig = GridFieldConfig_RecordEditor::create(100);
         $gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));

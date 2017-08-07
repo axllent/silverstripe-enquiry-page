@@ -16,7 +16,7 @@ class EnquiryFormField extends DataObject
 {
     private static $table_name = 'EnquiryFormField';
 
-    public static $default_sort = [
+    private static $default_sort = [
         '"SortOrder"' => 'ASC'
     ];
 
@@ -29,7 +29,7 @@ class EnquiryFormField extends DataObject
         'RequiredField' => 'Boolean',
     ];
 
-    public static $fieldtypes = [
+    private static $fieldtypes = [
         'Text' => 'Text field',
         'Email' => 'Email field',
         'Select' => 'Select - Dropdown select field',
