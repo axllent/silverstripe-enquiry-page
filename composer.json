@@ -20,14 +20,12 @@
 		"issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
 	},
 	"require": {
-		"silverstripe/cms": "^4.0@dev",
+		"silverstripe/cms": "^4.0",
 		"undefinedoffset/sortablegridfield": "*"
 	},
     "autoload": {
         "psr-4": {
             "Axllent\\EnquiryPage\\": "src/"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
