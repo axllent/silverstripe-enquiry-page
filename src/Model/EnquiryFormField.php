@@ -11,6 +11,7 @@ use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
 
 class EnquiryFormField extends DataObject
 {
@@ -167,5 +168,38 @@ class EnquiryFormField extends DataObject
             return $this->FieldName;
         }
         return 'New';
+    }
+
+    /* Permissions */
+    public function canView($member = null)
+    {
+        return true;
+    }
+
+    public function canEdit($member = null)
+    {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+        if ($extended !== null) {
+            return $extended;
+        }
+    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
+    }
+
+    public function canCreate($member = null, $context = [])
+    {
+        $extended = $this->extendedCan(__FUNCTION__, $member, $context);
+        if ($extended !== null) {
+            return $extended;
+        }
+    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
+    }
+
+    public function canDelete($member = null)
+    {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+        if ($extended !== null) {
+            return $extended;
+        }
+    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
     }
 }
