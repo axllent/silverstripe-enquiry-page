@@ -32,7 +32,7 @@ class EnquiryPage extends Page
 
     private static $table_name = 'EnquiryPage';
 
-    private static $captcha_img_height = 30; // default image height
+    private static $captcha_img_height = 30; // default verification image height
 
     private static $js_validation = false; // add JavaScript field validation
 
