@@ -1,7 +1,7 @@
 {
 	"name": "axllent/silverstripe-enquiry-page",
 	"description": "Simple contact page with enquiry form",
-	"type": "silverstripe-module",
+	"type": "silverstripe-vendormodule",
 	"homepage": "https://github.com/axllent/silverstripe-enquiry-page",
 	"keywords": [
 		"silverstripe",
@@ -20,9 +20,15 @@
 		"issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
 	},
 	"require": {
+        "silverstripe/vendor-plugin": "^1.0",
 		"silverstripe/cms": "^4.0",
 		"undefinedoffset/sortablegridfield": "*"
 	},
+    "extra": {
+        "expose": [
+            "javascript"
+        ]
+    },
     "autoload": {
         "psr-4": {
             "Axllent\\EnquiryPage\\": "src/"

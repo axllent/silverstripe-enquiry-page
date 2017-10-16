@@ -109,7 +109,8 @@ class EnquiryPageController extends PageController
                 }
             } elseif ($el->FieldType == 'Header') {
                 if ($el->FieldOptions) {
-                    $field = LiteralField::create($key,
+                    $field = LiteralField::create(
+                        $key,
                         '<h4>' . htmlspecialchars($el->FieldName) . '</h4>
 						<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>'
                     );
@@ -171,9 +172,7 @@ class EnquiryPageController extends PageController
 
         if (Config::inst()->get('Axllent\EnquiryPage\EnquiryPage', 'js_validation')) {
             Requirements::customScript('var EnquiryFormValidator='.json_encode($jsValidator).';');
-            Requirements::javascript(
-                basename(dirname(dirname(__FILE__))) . '/javascript/enquiryform.js'
-            );
+            Requirements::javascript('axllent/silverstripe-enquiry-page: javascript/enquiryform.js');
         }
 
         $form = Form::create($this, 'EnquiryForm', $fields, $actions, $validator);
