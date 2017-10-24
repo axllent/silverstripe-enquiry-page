@@ -38,7 +38,7 @@ class EnquiryPage extends Page
 
     private static $random_string = '3HNbhqWBEg'; // random string
 
-    private static $icon = 'silverstripe-enquiry-page/images/EnquiryPage.png';
+    private static $icon = 'axllent/silverstripe-enquiry-page: images/EnquiryPage.png';
 
     private static $description = 'Page with an editable contact form';
 

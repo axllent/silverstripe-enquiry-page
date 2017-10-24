@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.0.5]
+
+- Fixes for upcoming $icon changes
+
+
 ## [2.0.4]
 
 - Switch to silverstripe-vendormodule
