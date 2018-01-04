@@ -77,7 +77,6 @@ class EnquiryFormField extends DataObject
                 break;
             case 'Checkbox':
                 $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
-                $fields->removeByName('RequiredField');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Radio':
@@ -156,7 +155,7 @@ class EnquiryFormField extends DataObject
         $this->FieldName = trim($this->FieldName);
         if ($this->FieldType == 'Radio') {
             $this->PlaceholderText = '';
-        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select'])) {
+        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select', 'Checkbox'])) {
             $this->RequiredField = 0;
             $this->PlaceholderText = '';
         }

@@ -8,6 +8,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
@@ -91,7 +92,9 @@ class EnquiryPageController extends PageController
                 }
             } elseif ($el->FieldType == 'Checkbox') {
                 $options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-                if (count($options) > 0) {
+                if (count($options) == 1) {
+                    $field = CheckboxField::create($key, trim(reset($options)));
+                } elseif (count($options) > 0) {
                     $tmp = [];
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
