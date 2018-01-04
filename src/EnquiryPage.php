@@ -167,7 +167,7 @@ class EnquiryPage extends Page
                     ])
                 );
             } elseif (
-                !in_array($el->FieldType, ['Header', 'Note']) &&
+                !in_array($el->FieldType, ['Header', 'Note', 'HTML']) &&
                 isset($data[$key]) && $data[$key] != ''
             ) {
                 $hdr = htmlspecialchars($el->FieldName);

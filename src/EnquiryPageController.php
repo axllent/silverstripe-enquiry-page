@@ -120,6 +120,8 @@ class EnquiryPageController extends PageController
                 } else {
                     $field = HeaderField::create($key, $el->FieldName, 4);
                 }
+            } elseif ($el->FieldType == 'HTML') {
+                $field = LiteralField::create($key, $el->FieldOptions);
             } elseif ($el->FieldType == 'Note') {
                 if ($el->FieldOptions) {
                     $field = LiteralField::create($key, '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');

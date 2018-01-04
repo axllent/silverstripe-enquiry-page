@@ -7,6 +7,7 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
 use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
@@ -24,8 +25,8 @@ class EnquiryFormField extends DataObject
     private static $db = [
         'SortOrder' => 'Int',
         'FieldName' => 'Varchar(150)',
-        'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note","Text")',
-        'FieldOptions' => 'Text',
+        'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note, HTML","Text")',
+        'FieldOptions' => 'HTMLText',
         'PlaceholderText' => 'Varchar(150)',
         'RequiredField' => 'Boolean',
     ];
@@ -37,7 +38,8 @@ class EnquiryFormField extends DataObject
         'Checkbox' => 'Checkbox - multiple tick boxes',
         'Radio' => 'Radio - single tick option',
         'Header' => 'Header in the form',
-        'Note' => 'Note in form'
+        'Note' => 'Note in form',
+        'HTML' => 'Arbitrary HTML'
     ];
 
     private static $has_one = [
@@ -101,6 +103,15 @@ class EnquiryFormField extends DataObject
                 ]);
                 $fields->removeByName('PlaceholderText');
                 break;
+            case 'HTML':
+                $fields->removeByName('RequiredField');
+                $fields->removeByName('FieldOptions');
+                $fields->addFieldsToTab('Root.Main', [
+                    HeaderField::create('FieldOptionsInfo', 'The following chunk of HTML will be inserted inside the form', 4),
+                    HtmlEditorField::create('FieldOptions', 'HTML')
+                ]);
+                $fields->removeByName('PlaceholderText');
+                break;
             case 'Text':
                 $fields->removeByName('FieldOptions');
                 $rows = NumericField::create('FieldOptions', 'Number of rows');
@@ -125,7 +136,7 @@ class EnquiryFormField extends DataObject
 
     public function getRequired()
     {
-        if (in_array($this->FieldType, ['Header', 'Note'])) {
+        if (in_array($this->FieldType, ['Header', 'Note', 'HTML'])) {
             return false;
         }
         return $this->RequiredField ? 'Yes' : 'No';
