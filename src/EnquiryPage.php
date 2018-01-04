@@ -50,6 +50,7 @@ class EnquiryPage extends Page
         'EmailSubject' => 'Varchar(254)',
         'EmailSubmitButtonText' => 'Varchar(50)',
         'EmailSubmitCompletion' => 'HTMLText',
+        'EmailPlain' => 'Boolean',
         'AddCaptcha' => 'Boolean',
         'CaptchaText' => 'Varchar(50)',
         'CaptchaHelp' => 'Varchar(100)',
@@ -63,6 +64,7 @@ class EnquiryPage extends Page
         'EmailSubject' => 'Website Enquiry',
         'EmailSubmitButtonText' => 'Submit Enquiry',
         'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
+        'EmailPlain' => false,
         'CaptchaText' => 'Verification Image'
     ];
 
@@ -97,6 +99,10 @@ class EnquiryPage extends Page
             EmailField::create('EmailBcc', 'BCC Copy (optional)')
                 ->setRightTitle('If you would like a copy of the enquiry to be sent elsewhere'),
             TextField::create('EmailSubmitButtonText', 'Submit Button Text'),
+            DropdownField::create('EmailPlain', 'Email format', [
+                    0 => 'HTML email (default)',
+                    1 => 'Plain text email'
+            ]),
             HeaderField::create('CaptchaHdr', 'Form Captcha'),
             DropdownField::create('AddCaptcha', 'Captcha Image', [
                     1 => 'Yes add a captcha image',

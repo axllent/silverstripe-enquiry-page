@@ -205,11 +205,16 @@ class EnquiryPageController extends PageController
         //abuse / tracking
         $email->getSwiftMessage()->getHeaders()->addTextHeader('X-Sender-IP', $_SERVER['REMOTE_ADDR']);
 
-        $email->setHTMLTemplate('Email/EnquiryFormEmail');
         $templateData = $this->getTemplateData($data);
         $email->setData($templateData);
 
-        $email->send();
+        if ($this->EmailPlain) {
+            $email->setPlainTemplate('Email/EnquiryFormEmail');
+            $email->sendPlain();
+        } else {
+            $email->setHTMLTemplate('Email/EnquiryFormEmail');
+            $email->send();
+        }
 
         if (Director::is_ajax()) {
             return $this->renderWith('Layout/EnquiryPageAjaxSuccess');
