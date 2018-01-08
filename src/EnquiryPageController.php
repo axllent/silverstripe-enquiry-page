@@ -8,6 +8,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
@@ -91,7 +92,9 @@ class EnquiryPageController extends PageController
                 }
             } elseif ($el->FieldType == 'Checkbox') {
                 $options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-                if (count($options) > 0) {
+                if (count($options) == 1) {
+                    $field = CheckboxField::create($key, trim(reset($options)));
+                } elseif (count($options) > 0) {
                     $tmp = [];
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
@@ -117,6 +120,8 @@ class EnquiryPageController extends PageController
                 } else {
                     $field = HeaderField::create($key, $el->FieldName, 4);
                 }
+            } elseif ($el->FieldType == 'HTML') {
+                $field = LiteralField::create($key, $el->FieldOptions);
             } elseif ($el->FieldType == 'Note') {
                 if ($el->FieldOptions) {
                     $field = LiteralField::create($key, '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
@@ -200,11 +205,16 @@ class EnquiryPageController extends PageController
         //abuse / tracking
         $email->getSwiftMessage()->getHeaders()->addTextHeader('X-Sender-IP', $_SERVER['REMOTE_ADDR']);
 
-        $email->setHTMLTemplate('Email/EnquiryFormEmail');
         $templateData = $this->getTemplateData($data);
         $email->setData($templateData);
 
-        $email->send();
+        if ($this->EmailPlain) {
+            $email->setPlainTemplate('Email/EnquiryFormEmail');
+            $email->sendPlain();
+        } else {
+            $email->setHTMLTemplate('Email/EnquiryFormEmail');
+            $email->send();
+        }
 
         if (Director::is_ajax()) {
             return $this->renderWith('Layout/EnquiryPageAjaxSuccess');
