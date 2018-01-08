@@ -12,11 +12,11 @@
             <td valign="top"><b>$Header</b></td>
             <td valign="top">
               <% if $Value.count %><%-- This is an array --%>
-                <ul>
-                  <% loop $Value %><li>$Item</li><% end_loop %>
+                <ul style="padding:0; margin:0; list-style-position:inside;">
+                  <% loop $Value %><li style="margin-left:0">$Item</li><% end_loop %>
                 </ul>
               <% else %>
-                  $Value.XML
+                  $Value
               <% end_if %>
             </td>
           <% end_if %>
