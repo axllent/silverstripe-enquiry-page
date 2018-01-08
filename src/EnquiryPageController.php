@@ -209,7 +209,7 @@ class EnquiryPageController extends PageController
         $email->setData($templateData);
 
         if ($this->EmailPlain) {
-            $email->setPlainTemplate('Email/EnquiryFormEmail');
+            $email->setPlainTemplate('Email/EnquiryFormEmail_PlainText');
             $email->sendPlain();
         } else {
             $email->setHTMLTemplate('Email/EnquiryFormEmail');
