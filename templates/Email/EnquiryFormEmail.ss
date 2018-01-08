@@ -6,19 +6,17 @@
         <tr>
           <% if $Type == 'Header' %>
             <td valign="top" colspan="2" style="padding-top:10px; font-size:120%">
-              <u><b>$Header.XML</b></u>
+              <u><b>$Header</b></u>
             </td>
           <% else %>
-            <td valign="top"><b>$Header.XML</b></td>
+            <td valign="top"><b>$Header</b></td>
             <td valign="top">
               <% if $Value.count %><%-- This is an array --%>
                 <ul>
-                  <% loop $Value %><li>$Item.XML</li><% end_loop %>
+                  <% loop $Value %><li>$Item</li><% end_loop %>
                 </ul>
-              <% else_if $Value.FirstParagraph %><%-- This is a text block --%>
-                <pre>$Value.XML</pre>
-              <% else %><%-- This is a string --%>
-                $Value.XML
+              <% else %>
+                  $Value.XML
               <% end_if %>
             </td>
           <% end_if %>
