@@ -146,10 +146,10 @@ class EnquiryFormField extends DataObject
     {
         $valid = parent::validate();
         if (trim($this->FieldName) == '') {
-            $valid->error("Please enter a Field Name");
+            $valid->addError("Please enter a Field Name");
         }
         if (trim($this->FieldType) == '') {
-            $valid->error("Please select a Field Type");
+            $valid->addError("Please select a Field Type");
         }
         if ($this->FieldType == 'Text' && ($this->FieldOptions == '' || !is_numeric($this->FieldOptions) || $this->FieldOptions == 0)) {
             $this->FieldOptions = 1;
