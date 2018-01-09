@@ -2,6 +2,15 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.1.0]
+
+- Merge PR from @ntd to add required checkbox, custom html, plain text email option
+- Separate plaintext email template
+- Fix validation error (`addError()`)
+- HTML text for Readonly & HTML content (supports internal linking)
+- Remove 'Note' (Readonly now does the same)
+
+
 ## [2.0.5]
 
 - Fixes for upcoming $icon changes
