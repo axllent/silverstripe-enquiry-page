@@ -154,14 +154,7 @@ class EnquiryPage extends Page
             $name = $el->FieldName;
             $key = $this->keyGen($name, $el->SortOrder);
             $type = $el->FieldType;
-            if ($type == 'Header') {
-                $emailData->push(
-                    ArrayData::create([
-                        'Header' => $name,
-                        'Type' => $type
-                    ])
-                );
-            } elseif (in_array($type, ['Note', 'HTML'])) {
+            if (in_array($type, ['Header', 'HTML'])) {
                 // Cosmetic element (not used in emails)
             } elseif (isset($data[$key]) && $data[$key] != '') {
                 // Ensure the element is valorized
