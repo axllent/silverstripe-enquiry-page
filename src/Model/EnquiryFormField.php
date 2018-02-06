@@ -7,6 +7,7 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
 use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
@@ -24,8 +25,8 @@ class EnquiryFormField extends DataObject
     private static $db = [
         'SortOrder' => 'Int',
         'FieldName' => 'Varchar(150)',
-        'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, Note","Text")',
-        'FieldOptions' => 'Text',
+        'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, HTML", "Text")',
+        'FieldOptions' => 'HTMLText',
         'PlaceholderText' => 'Varchar(150)',
         'RequiredField' => 'Boolean',
     ];
@@ -33,11 +34,11 @@ class EnquiryFormField extends DataObject
     private static $fieldtypes = [
         'Text' => 'Text field',
         'Email' => 'Email field',
-        'Select' => 'Select - Dropdown select field',
+        'Select' => 'Select - dropdown select field',
         'Checkbox' => 'Checkbox - multiple tick boxes',
         'Radio' => 'Radio - single tick option',
-        'Header' => 'Header in the form',
-        'Note' => 'Note in form'
+        'Header' => 'Readonly field',
+        'HTML' => 'HTML section',
     ];
 
     private static $has_one = [
@@ -61,7 +62,9 @@ class EnquiryFormField extends DataObject
         $fields->removeByName('EnquiryPageID');
 
         $fields->addFieldToTab('Root.Main', DropdownField::create(
-            'FieldType', 'Field type', self::$fieldtypes
+            'FieldType',
+            'Field type',
+            self::$fieldtypes
         ));
 
         $fields->addFieldToTab('Root.Main', TextareaField::create('FieldOptions', 'Field options'));
@@ -77,28 +80,26 @@ class EnquiryFormField extends DataObject
                 break;
             case 'Checkbox':
                 $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add checkbox options below (one per line) - users can select multiple:', 4), 'FieldOptions');
-                $fields->removeByName('RequiredField');
                 $fields->removeByName('PlaceholderText');
                 break;
             case 'Radio':
                 $fields->addFieldToTab('Root.Main', HeaderField::create('FieldHdr_' . $hdrcnt++, 'Add options below (one per line) - users can select only one:', 4), 'FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 break;
-            case 'Header':
+            case 'Header': // Readonly form field
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('FieldOptions');
                 $fields->removeByName('PlaceholderText');
                 $fields->addFieldsToTab('Root.Main', [
-                    HeaderField::create('FieldOptionsInfo', 'Optional text below header.', 4),
-                    TextareaField::create('FieldOptions', 'Text')
+                    HtmlEditorField::create('FieldOptions', 'HTML text')
                 ]);
                 break;
-            case 'Note':
+            case 'HTML':
                 $fields->removeByName('RequiredField');
                 $fields->removeByName('FieldOptions');
+                $fields->removeByName('FieldName');
                 $fields->addFieldsToTab('Root.Main', [
-                    HeaderField::create('FieldOptionsInfo', 'If text is left empty then the "Field name" is used', 4),
-                    TextareaField::create('FieldOptions', 'Text')
+                    HtmlEditorField::create('FieldOptions', 'HTML content')
                 ]);
                 $fields->removeByName('PlaceholderText');
                 break;
@@ -121,12 +122,13 @@ class EnquiryFormField extends DataObject
 
     public function getType()
     {
-        return self::$fieldtypes[$this->FieldType];
+        return isset(self::$fieldtypes[$this->FieldType]) ?
+            self::$fieldtypes[$this->FieldType] : 'Invalid';
     }
 
     public function getRequired()
     {
-        if (in_array($this->FieldType, ['Header', 'Note'])) {
+        if (in_array($this->FieldType, ['Header', 'HTML'])) {
             return false;
         }
         return $this->RequiredField ? 'Yes' : 'No';
@@ -135,11 +137,15 @@ class EnquiryFormField extends DataObject
     public function validate()
     {
         $valid = parent::validate();
+
+        if ($this->FieldType == 'HTML') {
+            $this->FieldName = 'HTML Content';
+        }
         if (trim($this->FieldName) == '') {
-            $valid->error("Please enter a Field Name");
+            $valid->addError('Please enter a Field Name');
         }
         if (trim($this->FieldType) == '') {
-            $valid->error("Please select a Field Type");
+            $valid->addError('Please select a Field Type');
         }
         if ($this->FieldType == 'Text' && ($this->FieldOptions == '' || !is_numeric($this->FieldOptions) || $this->FieldOptions == 0)) {
             $this->FieldOptions = 1;
@@ -156,7 +162,7 @@ class EnquiryFormField extends DataObject
         $this->FieldName = trim($this->FieldName);
         if ($this->FieldType == 'Radio') {
             $this->PlaceholderText = '';
-        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select'])) {
+        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select', 'Checkbox'])) {
             $this->RequiredField = 0;
             $this->PlaceholderText = '';
         }
@@ -182,7 +188,7 @@ class EnquiryFormField extends DataObject
         if ($extended !== null) {
             return $extended;
         }
-    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
+        return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
     }
 
     public function canCreate($member = null, $context = [])
@@ -191,7 +197,7 @@ class EnquiryFormField extends DataObject
         if ($extended !== null) {
             return $extended;
         }
-    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
+        return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
     }
 
     public function canDelete($member = null)
@@ -200,6 +206,6 @@ class EnquiryFormField extends DataObject
         if ($extended !== null) {
             return $extended;
         }
-    	return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
+        return Permission::check('SITETREE_EDIT_ALL', 'any', $member);
     }
 }

@@ -8,6 +8,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
@@ -18,11 +19,13 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Forms\HTMLReadonlyField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\OptionSetField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TextAreaField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\View\Parsers\ShortcodeParser;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 use SilverStripe\View\Requirements;
 
@@ -91,7 +94,9 @@ class EnquiryPageController extends PageController
                 }
             } elseif ($el->FieldType == 'Checkbox') {
                 $options = preg_split('/\n\r?/', $el->FieldOptions, -1, PREG_SPLIT_NO_EMPTY);
-                if (count($options) > 0) {
+                if (count($options) == 1) {
+                    $field = CheckboxField::create($key, trim(reset($options)));
+                } elseif (count($options) > 0) {
                     $tmp = [];
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
@@ -107,22 +112,12 @@ class EnquiryPageController extends PageController
                     }
                     $field = OptionsetField::create($key, $el->FieldName, $tmp);
                 }
-            } elseif ($el->FieldType == 'Header') {
-                if ($el->FieldOptions) {
-                    $field = LiteralField::create(
-                        $key,
-                        '<h4>' . htmlspecialchars($el->FieldName) . '</h4>
-						<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>'
-                    );
-                } else {
-                    $field = HeaderField::create($key, $el->FieldName, 4);
-                }
-            } elseif ($el->FieldType == 'Note') {
-                if ($el->FieldOptions) {
-                    $field = LiteralField::create($key, '<p class="note">'.nl2br(htmlspecialchars($el->FieldOptions)).'</p>');
-                } else {
-                    $field = LiteralField::create($key, '<p class="note">'.htmlspecialchars($el->FieldName).'</p>');
-                }
+            } elseif ($el->FieldType == 'Header') { // Readonly field
+                $html = ShortcodeParser::get_active()->parse($el->FieldOptions);
+                $field = HTMLReadonlyField::create($key, $el->FieldName, $html);
+            } elseif ($el->FieldType == 'HTML') { // backwards compatible for old values
+                $html = ShortcodeParser::get_active()->parse($el->FieldOptions);
+                $field = LiteralField::create($key, $html);
             }
 
             if ($field) {
@@ -200,11 +195,16 @@ class EnquiryPageController extends PageController
         //abuse / tracking
         $email->getSwiftMessage()->getHeaders()->addTextHeader('X-Sender-IP', $_SERVER['REMOTE_ADDR']);
 
-        $email->setHTMLTemplate('Email/EnquiryFormEmail');
         $templateData = $this->getTemplateData($data);
         $email->setData($templateData);
 
-        $email->send();
+        if ($this->EmailPlain) {
+            $email->setPlainTemplate('Email/EnquiryFormEmail_PlainText');
+            $email->sendPlain();
+        } else {
+            $email->setHTMLTemplate('Email/EnquiryFormEmail');
+            $email->send();
+        }
 
         if (Director::is_ajax()) {
             return $this->renderWith('Layout/EnquiryPageAjaxSuccess');

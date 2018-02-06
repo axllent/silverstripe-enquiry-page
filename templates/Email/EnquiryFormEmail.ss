@@ -1,20 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<body>
-<table cellpadding="5" style="font-family:Arial,helvetica">
-<% loop $EmailData %>
-	<% if $Type = Header %>
-	<tr>
-		<td valign="top" colspan="2" style="padding-top:10px; font-size:120%">
-			<u><b>$Header</b></u>
-		</td>
-	</tr>
-	<% else %>
-	<tr>
-		<td valign="top"><b>$Header</b></td>
-		<td valign="top">$Value</td>
-	</tr>
-	<% end_if %>
-<% end_loop %>
-</table>
-</body>
+  <body>
+	<table cellpadding="5" style="font-family:Arial,helvetica">
+	  <% loop $EmailData %>
+		<tr>
+			<td valign="top"><b>$Header</b></td>
+			<td valign="top">
+			  <% if $Value.count %><%-- This is an array --%>
+				<ul style="padding:0; margin:0; list-style-position:inside;">
+				  <% loop $Value %><li style="margin-left:0">$Item</li><% end_loop %>
+				</ul>
+			  <% else %>
+				  $Value
+			  <% end_if %>
+			</td>
+		</tr>
+	  <% end_loop %>
+	</table>
+  </body>
 </html>

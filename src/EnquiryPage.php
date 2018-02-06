@@ -13,7 +13,8 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\ToggleCompositeField;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\FieldType\DBText;
+use SilverStripe\ORM\FieldType\DBVarchar;
 use SilverStripe\View\ArrayData;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
@@ -49,6 +50,7 @@ class EnquiryPage extends Page
         'EmailSubject' => 'Varchar(254)',
         'EmailSubmitButtonText' => 'Varchar(50)',
         'EmailSubmitCompletion' => 'HTMLText',
+        'EmailPlain' => 'Boolean',
         'AddCaptcha' => 'Boolean',
         'CaptchaText' => 'Varchar(50)',
         'CaptchaHelp' => 'Varchar(100)',
@@ -62,6 +64,7 @@ class EnquiryPage extends Page
         'EmailSubject' => 'Website Enquiry',
         'EmailSubmitButtonText' => 'Submit Enquiry',
         'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
+        'EmailPlain' => false,
         'CaptchaText' => 'Verification Image'
     ];
 
@@ -96,6 +99,10 @@ class EnquiryPage extends Page
             EmailField::create('EmailBcc', 'BCC Copy (optional)')
                 ->setRightTitle('If you would like a copy of the enquiry to be sent elsewhere'),
             TextField::create('EmailSubmitButtonText', 'Submit Button Text'),
+            DropdownField::create('EmailPlain', 'Email format', [
+                    0 => 'HTML email (default)',
+                    1 => 'Plain text email'
+            ]),
             HeaderField::create('CaptchaHdr', 'Form Captcha'),
             DropdownField::create('AddCaptcha', 'Captcha Image', [
                     1 => 'Yes add a captcha image',
@@ -140,53 +147,43 @@ class EnquiryPage extends Page
         return $valid;
     }
 
-    public function arrayToHtml($arr)
-    {
-        foreach ($arr as $a) {
-            $build[] = '&middot; '.trim(htmlspecialchars($a));
-        }
-        return DBHTMLText::create()->setValue(implode("<br />\n", $build));
-    }
-
-    public function dataToHtml($str)
-    {
-        return DBHTMLText::create()->setValue(nl2br(htmlspecialchars(trim($str))));
-    }
-
     public function getTemplateData($data)
     {
-        $elements = $this->EnquiryFormFields();
-        $templateData = [];
-        $templateData['EmailData'] = ArrayList::create();
-        foreach ($elements as $el) {
-            $key = $this->keyGen($el->FieldName, $el->SortOrder);
-            if ($el->FieldType == 'Header') {
-                $templateData['EmailData']->push(
-                    ArrayData::create([
-                        'Header' => htmlspecialchars($el->FieldName), 'Type' => 'Header'
-                    ])
-                );
-            } elseif (
-                !in_array($el->FieldType, ['Header', 'Note']) &&
-                isset($data[$key]) && $data[$key] != ''
-            ) {
-                $hdr = htmlspecialchars($el->FieldName);
-                if (is_array($data[$key])) {
-                    $value = $this->arrayToHtml($data[$key]);
+        $emailData = ArrayList::create();
+        foreach ($this->EnquiryFormFields() as $el) {
+            $name = $el->FieldName;
+            $key = $this->keyGen($name, $el->SortOrder);
+            $type = $el->FieldType;
+            if (in_array($type, ['Header', 'HTML'])) {
+                // Cosmetic element (not used in emails)
+            } elseif (isset($data[$key]) && $data[$key] != '') {
+                // Ensure the element is valorized
+                $raw = $data[$key];
+                if (is_array($raw)) {
+                    // Set of values
+                    $value = ArrayList::create();
+                    foreach ($raw as $item) {
+                        $value->push(ArrayData::create(['Item' => $item]));
+                    }
+                } elseif (strpos($raw, "\n") === false) {
+                    // Single line of text
+                    $value = DBVarchar::create()->setValue($raw);
                 } else {
-                    $value = $this->dataToHtml($data[$key]);
+                    // Multiple lines of text
+                    $value = DBText::create()->setValue($raw);
                 }
-
-                $templateData['EmailData']->push(
+                $emailData->push(
                     ArrayData::create([
-                        'Header' => $hdr,
+                        'Header' => $name,
                         'Value' => $value,
-                        'Type' => $el->FieldType
+                        'Type' => $type
                     ])
                 );
             }
         }
 
+        $templateData = [];
+        $templateData['EmailData'] = $emailData;
         return $templateData;
     }
 }
