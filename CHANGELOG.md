@@ -2,11 +2,6 @@
 
 Notable changes to this project will be documented in this file.
 
-## [2.1.1]
-
-- Use `DBInt::class` instead of `Int`
-
-
 ## [2.1.0]
 
 - Merge PR from @ntd to add required checkbox, custom html, plain text email option
