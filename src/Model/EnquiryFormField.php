@@ -12,7 +12,6 @@ use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBInt;
 use SilverStripe\Security\Permission;
 
 class EnquiryFormField extends DataObject
@@ -24,7 +23,7 @@ class EnquiryFormField extends DataObject
     ];
 
     private static $db = [
-        'SortOrder' => DBInt::class,
+        'SortOrder' => 'Int',
         'FieldName' => 'Varchar(150)',
         'FieldType' => 'Enum("Text, Email, Select, Checkbox, Radio, Header, HTML", "Text")',
         'FieldOptions' => 'HTMLText',
