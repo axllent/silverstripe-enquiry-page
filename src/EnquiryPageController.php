@@ -193,7 +193,10 @@ class EnquiryPageController extends PageController
         }
 
         //abuse / tracking
-        $email->getSwiftMessage()->getHeaders()->addTextHeader('X-Sender-IP', $_SERVER['REMOTE_ADDR']);
+        $ip = EnquiryPage::get_client_ip();
+        if ($ip) {
+            $email->getSwiftMessage()->getHeaders()->addTextHeader('X-Sender-IP', $ip);
+        }
 
         $templateData = $this->getTemplateData($data);
         $email->setData($templateData);
@@ -239,14 +242,14 @@ class EnquiryPageController extends PageController
             imagesetpixel($my_image, $x, $y, $random_colours[array_rand($random_colours)]);
         }
         $x = rand(1, 15);
-        $rand_string = rand(1000, 9999);
-        $numbers = str_split($rand_string);
+        $token = rand(1000, 9999);
+        $numbers = str_split($token);
         foreach ($numbers as $number) {
             $y = rand(1, $height - 20);
             imagestring($my_image, 5, $x, $y, $number, 0x000000);
             $x = $x+12;
         }
-        $request->getSession()->set('customcaptcha', md5($rand_string.$_SERVER['REMOTE_ADDR']) . Config::inst()->get('Axllent\EnquiryPage\EnquiryPage', 'random_string'));
+        $request->getSession()->set('customcaptcha', EnquiryPage::get_hash($token));
         $this->response->setBody(imagejpeg($my_image));
         imagedestroy($my_image);
         return $this->response;

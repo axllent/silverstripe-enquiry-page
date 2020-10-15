@@ -40,6 +40,20 @@ Axllent\EnquiryPage\EnquiryPage:
 
 Please note that the height should be no less than 20 (else the numbers may not be displayed properly).
 
+If you use web services that dynamically change the `REMOTE_ADDR` field (most notably
+CloudFlare) you can configure another field, e.g.:
+
+```
+Axllent\EnquiryPage\EnquiryPage:
+  # Try $_SERVER['HTTP_CF_CONNECTING_IP'] (CloudFlare custom field) before
+  # $_SERVER['REMOTE_ADDR'], so it will work with and without CloudFlare
+  client_ip_fields:
+    - HTTP_CF_CONNECTING_IP
+    - REMOTE_ADDR
+```
+
+If required, you can disable the client IP retrieval entirely by unsetting that option.
+
 
 ## JavaScript validation
 

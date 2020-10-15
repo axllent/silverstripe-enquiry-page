@@ -4,6 +4,7 @@ namespace Axllent\EnquiryPage;
 
 use Axllent\EnquiryPage\Model\EnquiryFormField;
 use Page;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
 use SilverStripe\Forms\GridField\GridField;
@@ -36,6 +37,8 @@ class EnquiryPage extends Page
     private static $captcha_img_height = 30; // default verification image height
 
     private static $js_validation = false; // add JavaScript field validation
+
+    private static $client_ip_fields = 'REMOTE_ADDR'; // Looked up in $_SERVER
 
     private static $random_string = '3HNbhqWBEg'; // random string
 
@@ -71,6 +74,38 @@ class EnquiryPage extends Page
     protected $usedFields = [];
 
     protected $usedFieldCounter = 0;
+
+    /*
+     * Get the client IP by querying the $_SERVER array.
+     * @return string
+     */
+    public static function get_client_ip()
+    {
+        $fields = Config::inst()->get(self::class, 'client_ip_fields');
+        if ($fields) {
+            if (is_string($fields)) {
+                $fields = [ $fields ];
+            }
+            foreach ($fields as $field) {
+                if (isset($_SERVER[$field])) {
+                    return $_SERVER[$field];
+                }
+            }
+        }
+        return '';
+    }
+
+    /*
+     * Return the hash to use for comparison.
+     * @param string $token
+     * @return string
+     */
+    public static function get_hash($token)
+    {
+        $ip = self::get_client_ip();
+        $random_string = Config::inst()->get(self::class, 'random_string');
+        return md5(trim($token) . $ip. $random_string);
+    }
 
     public function getCMSFields()
     {
