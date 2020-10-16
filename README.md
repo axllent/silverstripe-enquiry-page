@@ -6,7 +6,7 @@ libraries (ie: jQuery or MooTools). The enquiry form can be configured to add & 
 your own fields, including the following types:
 
 - **Text** (TextField/TextAreaField)
-- **Email** (TextField)
+- **Email** (EmailField)
 - **Select** (DropdownField), options configurable
 - **Checkbox** (CheckboxSetField), options configurable
 - **Options** (OptionsetField), options configurable

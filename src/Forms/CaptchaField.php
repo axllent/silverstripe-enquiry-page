@@ -8,7 +8,7 @@ use \Axllent\EnquiryPage\EnquiryPage;
 class CaptchaField extends TextField
 {
     /**
-     * Get at tributes
+     * Get attributes
      *
      * @return array
      */
