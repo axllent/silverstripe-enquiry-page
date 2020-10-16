@@ -2,7 +2,7 @@
 
 Notable changes to this project will be documented in this file.
 
-## [dev]
+## [2.2.0]
 
 - Merge PR from @ntd to customise the client IP environment header
 - Major code cleanup
