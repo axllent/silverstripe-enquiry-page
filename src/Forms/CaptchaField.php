@@ -1,24 +1,24 @@
 <?php
-
 namespace Axllent\EnquiryPage\Forms;
 
-use \Axllent\EnquiryPage\EnquiryPage;
 use SilverStripe\Control\Controller;
-use SilverStripe\Control\Session;
 use SilverStripe\Forms\TextField;
+use \Axllent\EnquiryPage\EnquiryPage;
 
 class CaptchaField extends TextField
 {
     /**
+     * Get at tributes
+     *
      * @return array
      */
     public function getAttributes()
     {
         $attributes = [];
 
-        $attributes['type'] = 'number';
+        $attributes['type']         = 'number';
         $attributes['autocomplete'] = 'off';
-        $attributes['required'] = 'required';
+        $attributes['required']     = 'required';
 
         return array_merge(
             parent::getAttributes(),
@@ -26,17 +26,26 @@ class CaptchaField extends TextField
         );
     }
 
+    /**
+     * Get validation image URL
+     *
+     * @return string
+     */
     public function validationImageURL()
     {
-        return $this->getForm()->getController()->Link() .'captcha.jpg?' . time();
+        return $this->getForm()->getController()->Link() . 'captcha.jpg?' . time();
     }
 
-    /*
-     * SERVER-SIDE VALIDATION (to ensure a browser with javascript disabled doesn't bypass validation)
+    /**
+     * Server-side validation
+     *
+     * @param ValidationResult $validator Validator
+     *
+     * @return ValidationResult
      */
     public function validate($validator)
     {
-        $typed = EnquiryPage::get_hash($this->value);
+        $typed     = EnquiryPage::get_hash($this->value);
         $generated = Controller::curr()
             ->getRequest()
             ->getSession()

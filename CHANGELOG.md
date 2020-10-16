@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+## [dev]
+
+- Merge PR from @ntd to customise the client IP environment header
+- Major code cleanup
+
+
 ## [2.1.0]
 
 - Merge PR from @ntd to add required checkbox, custom html, plain text email option

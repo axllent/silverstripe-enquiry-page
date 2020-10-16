@@ -1,5 +1,4 @@
 <?php
-
 namespace Axllent\EnquiryPage;
 
 use Axllent\EnquiryPage\Model\EnquiryFormField;
@@ -19,64 +18,117 @@ use SilverStripe\ORM\FieldType\DBVarchar;
 use SilverStripe\View\ArrayData;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
-/**
- * SilverStripe Enquiry Form
- * =========================
- *
- * Module to add a simple configurable enquiry form to SilverStripe
- *
- * License: MIT-style license http://opensource.org/licenses/MIT
- * Authors: Techno Joy development team (www.technojoy.co.nz)
- */
-
 class EnquiryPage extends Page
 {
-
+    /**
+     * Table name
+     *
+     * @var string
+     */
     private static $table_name = 'EnquiryPage';
 
-    private static $captcha_img_height = 30; // default verification image height
+    /**
+     * Default verification image height
+     *
+     * @var int
+     */
+    private static $captcha_img_height = 30;
 
-    private static $js_validation = false; // add JavaScript field validation
+    /**
+     * Add JavaScript field validation
+     *
+     * @var mixed
+     */
+    private static $js_validation = false;
 
-    private static $client_ip_fields = 'REMOTE_ADDR'; // Looked up in $_SERVER
+    /**
+     * Looked up in $_SERVER
+     *
+     * @var string
+     */
+    private static $client_ip_fields = 'REMOTE_ADDR';
 
-    private static $random_string = '3HNbhqWBEg'; // random string
+    /**
+     * Random token string
+     *
+     * @var string
+     */
+    private static $random_string = '3HNbhqWBEg';
 
+    /**
+     * CMS icon
+     *
+     * @var string
+     */
     private static $icon = 'axllent/silverstripe-enquiry-page: images/EnquiryPage.png';
 
+    /**
+     * Description
+     *
+     * @var string
+     */
     private static $description = 'Page with an editable contact form';
 
+    /**
+     * Database field definitions.
+     *
+     * @var    array
+     * @config
+     */
     private static $db = [
-        'EmailTo' => 'Varchar(254)',
-        'EmailBcc' => 'Varchar(254)',
-        'EmailFrom' => 'Varchar(254)',
-        'EmailSubject' => 'Varchar(254)',
+        'EmailTo'               => 'Varchar(254)',
+        'EmailBcc'              => 'Varchar(254)',
+        'EmailFrom'             => 'Varchar(254)',
+        'EmailSubject'          => 'Varchar(254)',
         'EmailSubmitButtonText' => 'Varchar(50)',
         'EmailSubmitCompletion' => 'HTMLText',
-        'EmailPlain' => 'Boolean',
-        'AddCaptcha' => 'Boolean',
-        'CaptchaText' => 'Varchar(50)',
-        'CaptchaHelp' => 'Varchar(100)',
+        'EmailPlain'            => 'Boolean',
+        'AddCaptcha'            => 'Boolean',
+        'CaptchaText'           => 'Varchar(50)',
+        'CaptchaHelp'           => 'Varchar(100)',
     ];
 
+    /**
+     * Defines one-to-many relationships.
+     *
+     * @var    array
+     * @config
+     */
     private static $has_many = [
         'EnquiryFormFields' => EnquiryFormField::class,
     ];
 
+    /**
+     * DataObject defaults
+     *
+     * @var    array
+     * @config
+     */
     private static $defaults = [
-        'EmailSubject' => 'Website Enquiry',
-        'EmailSubmitButtonText' => 'Submit Enquiry',
+        'EmailSubject'          => 'Website enquiry',
+        'EmailSubmitButtonText' => 'Submit enquiry',
         'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
-        'EmailPlain' => false,
-        'CaptchaText' => 'Verification Image'
+        'EmailPlain'            => false,
+        'CaptchaText'           => 'Verification image',
     ];
 
+    /**
+     * Used fields
+     *
+     * @var array
+     */
     protected $usedFields = [];
 
+    /**
+     * Field counter
+     *
+     * @var int
+     */
     protected $usedFieldCounter = 0;
 
-    /*
+    /**
      * Get the client IP by querying the $_SERVER array.
+     *
      * @return string
      */
     public static function get_client_ip()
@@ -84,7 +136,7 @@ class EnquiryPage extends Page
         $fields = Config::inst()->get(self::class, 'client_ip_fields');
         if ($fields) {
             if (is_string($fields)) {
-                $fields = [ $fields ];
+                $fields = [$fields];
             }
             foreach ($fields as $field) {
                 if (isset($_SERVER[$field])) {
@@ -92,68 +144,104 @@ class EnquiryPage extends Page
                 }
             }
         }
+
         return '';
     }
 
-    /*
+    /**
      * Return the hash to use for comparison.
-     * @param string $token
+     *
+     * @param string $token Token
+     *
      * @return string
      */
     public static function get_hash($token)
     {
-        $ip = self::get_client_ip();
+        $ip            = self::get_client_ip();
         $random_string = Config::inst()->get(self::class, 'random_string');
-        return md5(trim($token) . $ip. $random_string);
+
+        return md5(trim($token) . $ip . $random_string);
     }
 
+    /**
+     * Data administration interface in Silverstripe.
+     *
+     * @see    {@link ValidationResult}
+     * @return FieldList Returns a TabSet for usage within the CMS
+     */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
 
-        $gridFieldConfig = GridFieldConfig_RecordEditor::create(100);
-        $gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));
+        $config = GridFieldConfig_RecordEditor::create(100);
+        $config->addComponent(new GridFieldSortableRows('SortOrder'));
 
-        $gridField = GridField::create('EnquiryFormFields', 'Enquiry Form Fields', $this->EnquiryFormFields(), $gridFieldConfig);
+        $gridField = GridField::create(
+            'EnquiryFormFields',
+            'Enquiry form fields',
+            $this->EnquiryFormFields(),
+            $config
+        );
         $fields->addFieldToTab('Root.EnquiryForm', $gridField);
 
         if (!$this->CaptchaText) {
-            $this->CaptchaText = 'Verification Image';
+            $this->CaptchaText = 'Verification image';
         }
 
         $email_settings = [
-            EmailField::create('EmailTo', 'Send Email To')
+            EmailField::create('EmailTo', 'Send email to')
                 ->setAttribute('placeholder', 'you@yourdomain.com'),
-            EmailField::create('EmailFrom', 'Send Email From')
+            EmailField::create('EmailFrom', 'Send email from')
                 ->setAttribute('placeholder', 'website@yourdomain.com')
                 ->setRightTitle('For example website@yourdomain.com'),
-            TextField::create('EmailSubject', 'Email Subject'),
-            HTMLEditorField::create('EmailSubmitCompletion', 'Message Once Completed')
+            TextField::create('EmailSubject', 'Email subject'),
+            HTMLEditorField::create(
+                'EmailSubmitCompletion',
+                'Message once completed'
+            )
                 ->setRows(10)
                 ->addExtraClass('stacked'),
-            EmailField::create('EmailBcc', 'BCC Copy (optional)')
-                ->setRightTitle('If you would like a copy of the enquiry to be sent elsewhere'),
-            TextField::create('EmailSubmitButtonText', 'Submit Button Text'),
-            DropdownField::create('EmailPlain', 'Email format', [
+            EmailField::create('EmailBcc', 'BCC copy (optional)')
+                ->setRightTitle(
+                    'If you would like a copy of the enquiry to be sent elsewhere'
+                ),
+            TextField::create('EmailSubmitButtonText', 'Submit button text'),
+            DropdownField::create(
+                'EmailPlain',
+                'Email format',
+                [
                     0 => 'HTML email (default)',
-                    1 => 'Plain text email'
-            ]),
-            HeaderField::create('CaptchaHdr', 'Form Captcha'),
-            DropdownField::create('AddCaptcha', 'Captcha Image', [
+                    1 => 'Plain text email',
+                ]
+            ),
+            HeaderField::create('CaptchaHdr', 'Form captcha'),
+            DropdownField::create(
+                'AddCaptcha',
+                'Captcha image',
+                [
                     1 => 'Yes add a captcha image',
-                    0 => 'No'
-            ])->setRightTitle('Add an anti-spam "captcha" image. ' .
-			'This adds a small image with 4 random numbers which needs to be filled in correctly.'),
-            TextField::create('CaptchaText', 'Field Name'),
-            TextField::create('CaptchaHelp', 'Captcha Help')
-                ->setRightTitle('Optionally add an explanation of what the captcha field is')
+                    0 => 'No',
+                ]
+            )->setRightTitle(
+                'Add an anti-spam "captcha" image. ' .
+                'This adds a small image with 4 random ' .
+                'numbers which needs to be filled in correctly.'
+            ),
+            TextField::create('CaptchaText', 'Field name'),
+            TextField::create('CaptchaHelp', 'Captcha help')
+                ->setRightTitle(
+                    'Optionally add an explanation of what the captcha field is'
+                ),
         ];
 
-        $toggleSettings = ToggleCompositeField::create('FormSettings', 'Enquiry Form Settings',
+        $toggleSettings = ToggleCompositeField::create(
+            'FormSettings',
+            'Enquiry form settings',
             $email_settings
         );
 
         $fields->addFieldsToTab('Root.EnquiryForm', $toggleSettings);
+
         return $fields;
     }
 
@@ -162,32 +250,49 @@ class EnquiryPage extends Page
      * @param name, order
      * @return string
      */
+    /**
+     * @param $n
+     * @param $s
+     */
     protected function keyGen($n, $s)
     {
         return preg_replace('/[^a-z0-9]/i', '', $n) . '_' . $s;
     }
 
+    /**
+     * Validate the current object.
+     *
+     * @see    {@link ValidationResult}
+     * @return ValidationResult
+     */
     public function validate()
     {
         $valid = parent::validate();
 
         if ($this->EmailSubmitButtonText == '') {
-            $this->EmailSubmitButtonText = 'Submit Enquiry';
+            $this->EmailSubmitButtonText = 'Submit enquiry';
         }
 
         if ($this->CaptchaText == '') {
-            $this->CaptchaText = 'Verification Image';
+            $this->CaptchaText = 'Verification image';
         }
 
         return $valid;
     }
 
+    /**
+     * Get template data
+     *
+     * @param array $data Data array
+     *
+     * @return ArrayList
+     */
     public function getTemplateData($data)
     {
         $emailData = ArrayList::create();
         foreach ($this->EnquiryFormFields() as $el) {
             $name = $el->FieldName;
-            $key = $this->keyGen($name, $el->SortOrder);
+            $key  = $this->keyGen($name, $el->SortOrder);
             $type = $el->FieldType;
             if (in_array($type, ['Header', 'HTML'])) {
                 // Cosmetic element (not used in emails)
@@ -208,17 +313,20 @@ class EnquiryPage extends Page
                     $value = DBText::create()->setValue($raw);
                 }
                 $emailData->push(
-                    ArrayData::create([
-                        'Header' => $name,
-                        'Value' => $value,
-                        'Type' => $type
-                    ])
+                    ArrayData::create(
+                        [
+                            'Header' => $name,
+                            'Value'  => $value,
+                            'Type'   => $type,
+                        ]
+                    )
                 );
             }
         }
 
-        $templateData = [];
+        $templateData              = [];
         $templateData['EmailData'] = $emailData;
+
         return $templateData;
     }
 }
