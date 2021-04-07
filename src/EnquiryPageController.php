@@ -183,11 +183,7 @@ class EnquiryPageController extends PageController
             $jsValidator['CaptchaImage'] = 'Text';
 
             if ($this->CaptchaHelp) {
-                $field->setRightTitle(
-                    '<span id="CaptchaHelp">' .
-                    htmlspecialchars($this->CaptchaHelp) .
-                    '</span>'
-                );
+                $field->setRightTitle($this->CaptchaHelp);
             }
 
             $fields->push($field);
