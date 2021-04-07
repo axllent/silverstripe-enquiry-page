@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.2.1]
+
+- Fix HTML escaping for `CaptchaHelp`
+
+
 ## [2.2.0]
 
 - Merge PR from @ntd to customise the client IP environment header
