@@ -221,10 +221,7 @@ class EnquiryPageController extends PageController
      */
     public function sendEnquiryForm($data, $form)
     {
-        $From    = $this->EmailFrom;
-        $To      = $this->EmailTo;
-        $Subject = $this->EmailSubject;
-        $email   = new Email($From, $To, $Subject);
+        $this->extend('onBeforeSendEnquiryForm', $data, $form);
 
         $from    = $this->EmailFrom;
         $to      = $this->EmailTo;
@@ -264,6 +261,7 @@ class EnquiryPageController extends PageController
             $email->send();
         }
 
+        $this->extend('onAfterSendEnquiryForm', $data, $form);
 
         if (Director::is_ajax()) {
             return $this->renderWith('Layout/EnquiryPageAjaxSuccess');
