@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.2.2]
+
+- Add new method to generate form field names
+- Add `onBeforeSendEnquiryForm` & `onAfterSendEnquiryForm` extension hooks
+
+
 ## [2.2.1]
 
 - Fix HTML escaping for `CaptchaHelp`
