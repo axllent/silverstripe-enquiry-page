@@ -245,20 +245,6 @@ class EnquiryPage extends Page
         return $fields;
     }
 
-    /*
-     * Generate a unique key for that field
-     * @param name, order
-     * @return string
-     */
-    /**
-     * @param $n
-     * @param $s
-     */
-    protected function keyGen($n, $s)
-    {
-        return preg_replace('/[^a-z0-9]/i', '', $n) . '_' . $s;
-    }
-
     /**
      * Validate the current object.
      *
@@ -292,7 +278,7 @@ class EnquiryPage extends Page
         $emailData = ArrayList::create();
         foreach ($this->EnquiryFormFields() as $el) {
             $name = $el->FieldName;
-            $key  = $this->keyGen($name, $el->SortOrder);
+            $key  = $el->formFieldName();
             $type = $el->FieldType;
             if (in_array($type, ['Header', 'HTML'])) {
                 // Cosmetic element (not used in emails)

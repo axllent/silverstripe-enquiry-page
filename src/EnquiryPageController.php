@@ -82,7 +82,7 @@ class EnquiryPageController extends PageController
         $get_param_filter = URLSegmentFilter::create();
 
         foreach ($elements as $el) {
-            $key   = $this->keyGen($el->FieldName, $el->SortOrder);
+            $key   = $el->formFieldName();
             $field = false;
             $type  = false;
             if ($el->FieldType == 'Text') {
@@ -226,11 +226,19 @@ class EnquiryPageController extends PageController
         $Subject = $this->EmailSubject;
         $email   = new Email($From, $To, $Subject);
 
+        $from    = $this->EmailFrom;
+        $to      = $this->EmailTo;
+        $subject = $this->EmailSubject;
+        $email   = Email::create($from, $to, $subject);
+
+        // if one of the fieldfs is an email address, use that for reply-to
         $replyTo = $this->EnquiryFormFields()
-            ->filter(['FieldType' => 'Email'])->First();
+            ->filter(['FieldType' => 'Email'])->first();
         if ($replyTo) {
-            $post_field = $this->keyGen($replyTo->FieldName, $replyTo->SortOrder);
-            if (isset($data[$post_field]) && Email::is_valid_address($data[$post_field])) {
+            $post_field = $replyTo->formFieldName();
+            if (isset($data[$post_field])
+                && Email::is_valid_address($data[$post_field])
+            ) {
                 $email->setReplyTo($data[$post_field]);
             }
         }
@@ -239,8 +247,7 @@ class EnquiryPageController extends PageController
         }
 
         //abuse / tracking
-        $ip = EnquiryPage::get_client_ip();
-        if ($ip) {
+        if ($ip = EnquiryPage::get_client_ip()) {
             $email->getSwiftMessage()
                 ->getHeaders()
                 ->addTextHeader('X-Sender-IP', $ip);
@@ -257,19 +264,29 @@ class EnquiryPageController extends PageController
             $email->send();
         }
 
+
         if (Director::is_ajax()) {
             return $this->renderWith('Layout/EnquiryPageAjaxSuccess');
         }
         $this->redirect($this->Link('?success=1#thankyou'));
     }
 
-    public function Success()
+    /**
+     * Success is for template purposes only
+     *
+     * @return bool
+     */
+    public function success()
     {
         return isset($_GET['success']);
     }
 
     /**
      * Captcha image generated on the fly
+     *
+     * @param HTTPRequest $request HTTPRequest
+     *
+     * @return HTTPResponse Image
      */
     public function captcha($request)
     {

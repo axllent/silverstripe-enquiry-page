@@ -244,6 +244,20 @@ class EnquiryFormField extends DataObject
     }
 
     /**
+     * Generate a unique form field name
+     *
+     * @return string
+     */
+    public function formFieldName()
+    {
+        return preg_replace(
+            '/[^a-z0-9]/i',
+            '',
+            $this->FieldName
+        ) . '_' . $this->ID;
+    }
+
+    /**
      * Validate the current object.
      *
      * @see    {@link ValidationResult}
@@ -253,13 +267,16 @@ class EnquiryFormField extends DataObject
     {
         $valid = parent::validate();
 
+        $this->FieldName = trim($this->FieldName);
+        $this->FiledType = trim($this->FieldType);
+
         if ($this->FieldType == 'HTML') {
             $this->FieldName = 'HTML Content';
         }
-        if (trim($this->FieldName) == '') {
+        if ($this->FieldName == '') {
             $valid->addError('Please enter a Field Name');
         }
-        if (trim($this->FieldType) == '') {
+        if ($this->FieldType == '') {
             $valid->addError('Please select a Field Type');
         }
         if ($this->FieldType == 'Text'
@@ -295,13 +312,21 @@ class EnquiryFormField extends DataObject
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
-        $this->FieldName = trim($this->FieldName);
+
+        if (!$this->SortOrder) {
+            $this->SortOrder = self::get()->max('SortOrder') + 1;
+        }
+
         if ($this->FieldType == 'Radio') {
             $this->PlaceholderText = '';
-        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select', 'Checkbox'])) {
+        } elseif (!in_array(
+            $this->FieldType, ['Text', 'Email', 'Select', 'Checkbox']
+        )
+        ) {
             $this->RequiredField   = 0;
             $this->PlaceholderText = '';
         }
+
     }
 
     /**
