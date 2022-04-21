@@ -56,7 +56,8 @@ class EnquiryPageController extends PageController
      */
     public function enquiryForm()
     {
-        if (!Email::is_valid_address($this->EmailTo)
+        if (!$this->EmailTo || !$this->EmailFrom
+            || !Email::is_valid_address($this->EmailTo)
             || !Email::is_valid_address($this->EmailFrom)
         ) {
             return false;
