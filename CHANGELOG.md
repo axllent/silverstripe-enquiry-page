@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [2.3.4]
+
+- Change `$default_sort` to a string
+
+
 ## [2.2.3]
 
 - Fix `Email::is_valid_address()` error when value is null
