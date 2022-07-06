@@ -27,9 +27,7 @@ class EnquiryFormField extends DataObject
      * @var    array
      * @config
      */
-    private static $default_sort = [
-        '"SortOrder"' => 'ASC',
-    ];
+    private static $default_sort = '"SortOrder" ASC';
 
     /**
      * Database field definitions.
