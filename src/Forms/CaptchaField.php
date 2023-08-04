@@ -1,9 +1,10 @@
 <?php
+
 namespace Axllent\EnquiryPage\Forms;
 
+use Axllent\EnquiryPage\EnquiryPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\TextField;
-use \Axllent\EnquiryPage\EnquiryPage;
 
 class CaptchaField extends TextField
 {
@@ -33,7 +34,8 @@ class CaptchaField extends TextField
      */
     public function validationImageURL()
     {
-        return $this->getForm()->getController()->Link() . 'captcha.jpg?' . time();
+        return $this->getForm()->getController()
+            ->Link('captcha.jpg') . '?' . time();
     }
 
     /**
@@ -45,7 +47,7 @@ class CaptchaField extends TextField
      */
     public function validate($validator)
     {
-        $typed     = EnquiryPage::get_hash($this->value);
+        $typed     = EnquiryPage::getHash($this->value);
         $generated = Controller::curr()
             ->getRequest()
             ->getSession()

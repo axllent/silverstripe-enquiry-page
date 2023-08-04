@@ -1,8 +1,8 @@
-# Enquiry Page Module for SilverStripe 4
+# Enquiry Page Module for Silverstripe 5
 
 This is a simple module to add an Enquiry Page pagetype to the CMS. The module uses
 optional JavaScript form validation, so no requirements for third-party JavaScript
-libraries (ie: jQuery or MooTools). The enquiry form can be configured to add & order
+libraries (eg: jQuery). The enquiry form can be configured to add & order
 your own fields, including the following types:
 
 - **Text** (TextField/TextAreaField)
@@ -30,7 +30,7 @@ your own fields, including the following types:
 
 A randomly-generated captcha image can be easily enabled in the form via the CMS. By
 default it will produce a 4-digit image 60x30px with an input field next to it. If
-you wish to change the height of the image (eg: to match boostrap input styling), you
+you wish to change the height of the image (eg: to match bootstrap input styling), you
 can configure this in your YAML:
 
 ```
@@ -68,8 +68,8 @@ Axllent\EnquiryPage\EnquiryPage:
 
 ## Requirements
 
-- SilverStripe ^4
-- [SortableGridField](https://github.com/UndefinedOffset/SortableGridField)
+- Silverstripe ^5
+- [GridFieldExtensions](https://github.com/symbiote/silverstripe-gridfieldextensions)
 
 
 ## Installation

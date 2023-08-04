@@ -1,32 +1,31 @@
 {
-	"name": "axllent/silverstripe-enquiry-page",
-	"description": "Simple contact page with enquiry form",
-	"type": "silverstripe-vendormodule",
-	"homepage": "https://github.com/axllent/silverstripe-enquiry-page",
-	"keywords": [
-		"silverstripe",
-		"contact",
-		"form",
-		"email"
-	],
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Ralph Slooten",
-			"homepage": "http://www.axllent.org/"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
-	},
-	"require": {
-        "silverstripe/vendor-plugin": "^1.0",
-		"silverstripe/cms": "^4.0",
-		"undefinedoffset/sortablegridfield": "*"
-	},
+    "name": "axllent/silverstripe-enquiry-page",
+    "description": "Simple contact page with enquiry form",
+    "type": "silverstripe-vendormodule",
+    "homepage": "https://github.com/axllent/silverstripe-enquiry-page",
+    "keywords": [
+        "silverstripe",
+        "contact",
+        "form",
+        "email"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ralph Slooten",
+            "homepage": "http://www.axllent.org/"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/axllent/silverstripe-enquiry-page/issues"
+    },
+    "require": {
+        "silverstripe/vendor-plugin": "^2.0",
+        "silverstripe/cms": "^5.0",
+        "symbiote/silverstripe-gridfieldextensions": "^4.0"
+    },
     "extra": {
         "expose": [
-            "images",
             "javascript"
         ]
     },

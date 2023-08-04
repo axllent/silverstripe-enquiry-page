@@ -1,8 +1,8 @@
 <?php
+
 namespace Axllent\EnquiryPage;
 
 use Axllent\EnquiryPage\Forms\CaptchaField;
-use PageController;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPResponse;
@@ -24,12 +24,13 @@ use SilverStripe\View\Parsers\ShortcodeParser;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 use SilverStripe\View\Requirements;
 
-class EnquiryPageController extends PageController
+class EnquiryPageController extends \PageController
 {
     /**
      * Allowed actions
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $allowed_actions = [
@@ -69,33 +70,33 @@ class EnquiryPageController extends PageController
 
         $elements = $this->EnquiryFormFields();
 
-        /* empty form, return nothing */
-        if ($elements->count() == 0) {
+        // empty form, return nothing
+        if (0 == $elements->count()) {
             return false;
         }
 
-        /* Build the fieldlist */
+        // Build the fieldlist
         $fields      = FieldList::create();
         $validator   = RequiredFields::create();
         $jsValidator = [];
 
-        /* Create filter for possible $_GET parameters / pre-population */
+        // Create filter for possible $_GET parameters / pre-population
         $get_param_filter = URLSegmentFilter::create();
 
         foreach ($elements as $el) {
             $key   = $el->formFieldName();
             $field = false;
             $type  = false;
-            if ($el->FieldType == 'Text') {
-                if ($el->FieldOptions == 1) {
+            if ('Text' == $el->FieldType) {
+                if (1 == $el->FieldOptions) {
                     $field = TextField::create($key, $el->FieldName);
                 } else {
                     $field = TextareaField::create($key, $el->FieldName);
                     $field->setRows($el->FieldOptions);
                 }
-            } elseif ($el->FieldType == 'Email') {
+            } elseif ('Email' == $el->FieldType) {
                 $field = EmailField::create($key, $el->FieldName);
-            } elseif ($el->FieldType == 'Select') {
+            } elseif ('Select' == $el->FieldType) {
                 $options = preg_split(
                     '/\n\r?/',
                     $el->FieldOptions,
@@ -110,14 +111,14 @@ class EnquiryPageController extends PageController
                     $field = DropdownField::create($key, $el->FieldName, $tmp);
                     $field->setEmptyString('[ Please Select ]');
                 }
-            } elseif ($el->FieldType == 'Checkbox') {
+            } elseif ('Checkbox' == $el->FieldType) {
                 $options = preg_split(
                     '/\n\r?/',
                     $el->FieldOptions,
                     -1,
                     PREG_SPLIT_NO_EMPTY
                 );
-                if (count($options) == 1) {
+                if (1 == count($options)) {
                     $field = CheckboxField::create($key, trim(reset($options)));
                 } elseif (count($options) > 0) {
                     $tmp = [];
@@ -126,7 +127,7 @@ class EnquiryPageController extends PageController
                     }
                     $field = CheckboxSetField::create($key, $el->FieldName, $tmp);
                 }
-            } elseif ($el->FieldType == 'Radio') {
+            } elseif ('Radio' == $el->FieldType) {
                 $options = preg_split(
                     '/\n\r?/',
                     $el->FieldOptions,
@@ -140,11 +141,11 @@ class EnquiryPageController extends PageController
                     }
                     $field = OptionsetField::create($key, $el->FieldName, $tmp);
                 }
-            } elseif ($el->FieldType == 'Header') {
+            } elseif ('Header' == $el->FieldType) {
                 // Readonly field
                 $html  = ShortcodeParser::get_active()->parse($el->FieldOptions);
                 $field = HTMLReadonlyField::create($key, $el->FieldName, $html);
-            } elseif ($el->FieldType == 'HTML') {
+            } elseif ('HTML' == $el->FieldType) {
                 // backwards compatible for old values
                 $html  = ShortcodeParser::get_active()->parse($el->FieldOptions);
                 $field = LiteralField::create($key, $html);
@@ -161,7 +162,7 @@ class EnquiryPageController extends PageController
                     $field->setValue($request->getVar($get_var));
                 }
 
-                if ($el->RequiredField == 1) {
+                if (1 == $el->RequiredField) {
                     $field->addExtraClass('required');
                     // add "Required" next to field
                     $validator->addRequiredField($key);
@@ -207,9 +208,7 @@ class EnquiryPageController extends PageController
             );
         }
 
-        $form = Form::create($this, 'EnquiryForm', $fields, $actions, $validator);
-
-        return $form;
+        return Form::create($this, 'EnquiryForm', $fields, $actions, $validator);
     }
 
     /**
@@ -244,11 +243,9 @@ class EnquiryPageController extends PageController
             $email->setBcc($this->EmailBcc);
         }
 
-        //abuse / tracking
-        if ($ip = EnquiryPage::get_client_ip()) {
-            $email->getSwiftMessage()
-                ->getHeaders()
-                ->addTextHeader('X-Sender-IP', $ip);
+        // abuse / tracking
+        if ($ip = EnquiryPage::getClientIP()) {
+            $email->getHeaders()->setHeaderBody('Text', 'X-Sender-IP', $ip);
         }
 
         $templateData = $this->getTemplateData($data);
@@ -301,7 +298,7 @@ class EnquiryPageController extends PageController
         $green          = imageColorAllocate($my_image, 22, 255, 2);
         $random_colours = [$purple, $green, $black];
         // add noise
-        for ($c = 0; $c < 150; $c++) {
+        for ($c = 0; $c < 150; ++$c) {
             $x = rand(0, $width - 1);
             $y = rand(0, $height - 1);
             imagesetpixel(
@@ -319,7 +316,7 @@ class EnquiryPageController extends PageController
             imagestring($my_image, 5, $x, $y, $number, 0x000000);
             $x = $x + 12;
         }
-        $request->getSession()->set('customcaptcha', EnquiryPage::get_hash($token));
+        $request->getSession()->set('customcaptcha', EnquiryPage::getHash($token));
         $this->response->setBody(imagejpeg($my_image));
         imagedestroy($my_image);
 

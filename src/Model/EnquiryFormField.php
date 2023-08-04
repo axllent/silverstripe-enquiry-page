@@ -1,4 +1,5 @@
 <?php
+
 namespace Axllent\EnquiryPage\Model;
 
 use Axllent\EnquiryPage\EnquiryPage;
@@ -24,7 +25,8 @@ class EnquiryFormField extends DataObject
     /**
      * The default sort.
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $default_sort = '"SortOrder" ASC';
@@ -32,7 +34,8 @@ class EnquiryFormField extends DataObject
     /**
      * Database field definitions.
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $db = [
@@ -62,7 +65,8 @@ class EnquiryFormField extends DataObject
     /**
      * One-to-zero relationship defintions.
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $has_one = [
@@ -73,7 +77,8 @@ class EnquiryFormField extends DataObject
      * Provides a default list of fields to be used by a 'summary'
      * view of this object.
      *
-     * @var    string
+     * @var string
+     *
      * @config
      */
     private static $summary_fields = [
@@ -85,7 +90,8 @@ class EnquiryFormField extends DataObject
     /**
      * Field labels
      *
-     * @var    string
+     * @var string
+     *
      * @config
      */
     private static $field_labels = [
@@ -96,6 +102,7 @@ class EnquiryFormField extends DataObject
      * Data administration interface in Silverstripe.
      *
      * @see    {@link ValidationResult}
+     *
      * @return FieldList Returns a TabSet for usage within the CMS
      */
     public function getCMSFields()
@@ -104,8 +111,8 @@ class EnquiryFormField extends DataObject
         $fields->removeByName('SortOrder');
         $fields->removeByName('EnquiryPageID');
 
-        $fields->addFieldToTab(
-            'Root.Main',
+        $fields->insertBefore(
+            'FieldName',
             DropdownField::create(
                 'FieldType',
                 'Field type',
@@ -136,7 +143,9 @@ class EnquiryFormField extends DataObject
                     'FieldOptions'
                 );
                 $fields->removeByName('PlaceholderText');
+
                 break;
+
             case 'Checkbox':
                 $fields->addFieldToTab(
                     'Root.Main',
@@ -148,7 +157,9 @@ class EnquiryFormField extends DataObject
                     'FieldOptions'
                 );
                 $fields->removeByName('PlaceholderText');
+
                 break;
+
             case 'Radio':
                 $fields->addFieldToTab(
                     'Root.Main',
@@ -160,7 +171,9 @@ class EnquiryFormField extends DataObject
                     'FieldOptions'
                 );
                 $fields->removeByName('PlaceholderText');
+
                 break;
+
             case 'Header':
                 // Readonly form field
                 $fields->removeByName(
@@ -175,7 +188,9 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HtmlEditorField::create('FieldOptions', 'HTML text')
                 );
+
                 break;
+
             case 'HTML':
                 $fields->removeByName(
                     [
@@ -190,7 +205,9 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HtmlEditorField::create('FieldOptions', 'HTML content')
                 );
+
                 break;
+
             case 'Text':
                 $fields->removeByName('FieldOptions');
                 $fields->addFieldToTab(
@@ -199,10 +216,14 @@ class EnquiryFormField extends DataObject
                         ->setValue(1),
                     'PlaceholderText'
                 );
+
                 break;
+
             case 'Email':
                 $fields->removeByName('FieldOptions');
+
                 break;
+
             default:
                 $fields->removeByName(
                     [
@@ -210,6 +231,7 @@ class EnquiryFormField extends DataObject
                         'PlaceholderText',
                     ]
                 );
+
                 break;
         }
 
@@ -259,6 +281,7 @@ class EnquiryFormField extends DataObject
      * Validate the current object.
      *
      * @see    {@link ValidationResult}
+     *
      * @return ValidationResult
      */
     public function validate()
@@ -268,24 +291,25 @@ class EnquiryFormField extends DataObject
         $this->FieldName = trim($this->FieldName);
         $this->FiledType = trim($this->FieldType);
 
-        if ($this->FieldType == 'HTML') {
+        if ('HTML' == $this->FieldType) {
             $this->FieldName = 'HTML Content';
         }
-        if ($this->FieldName == '') {
+        if ('' == $this->FieldName) {
             $valid->addError('Please enter a Field Name');
         }
-        if ($this->FieldType == '') {
+        if ('' == $this->FieldType) {
             $valid->addError('Please select a Field Type');
         }
-        if ($this->FieldType == 'Text'
-            && ($this->FieldOptions == ''
+        if ('Text' == $this->FieldType
+            && (
+                '' == $this->FieldOptions
                 || !is_numeric($this->FieldOptions)
-                || $this->FieldOptions == 0
+                || 0 == $this->FieldOptions
             )
         ) {
             $this->FieldOptions = 1;
         }
-        if ($this->FieldType == 'Select' || $this->FieldType == 'Checkbox') {
+        if ('Select' == $this->FieldType || 'Checkbox' == $this->FieldType) {
             $this->FieldOptions = trim(
                 implode(
                     "\n",
@@ -315,16 +339,16 @@ class EnquiryFormField extends DataObject
             $this->SortOrder = self::get()->max('SortOrder') + 1;
         }
 
-        if ($this->FieldType == 'Radio') {
+        if ('Radio' == $this->FieldType) {
             $this->PlaceholderText = '';
         } elseif (!in_array(
-            $this->FieldType, ['Text', 'Email', 'Select', 'Checkbox']
+            $this->FieldType,
+            ['Text', 'Email', 'Select', 'Checkbox']
         )
         ) {
             $this->RequiredField   = 0;
             $this->PlaceholderText = '';
         }
-
     }
 
     /**
@@ -346,7 +370,7 @@ class EnquiryFormField extends DataObject
      *
      * @param Member $member SilverStripe member
      *
-     * @return boolean
+     * @return bool
      */
     public function canView($member = null)
     {
@@ -358,12 +382,12 @@ class EnquiryFormField extends DataObject
      *
      * @param Member $member SilverStripe member
      *
-     * @return boolean
+     * @return bool
      */
     public function canEdit($member = null)
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
-        if ($extended !== null) {
+        if (null !== $extended) {
             return $extended;
         }
 
@@ -376,12 +400,12 @@ class EnquiryFormField extends DataObject
      * @param Member $member  SilverStripe member
      * @param array  $context Array
      *
-     * @return boolean
+     * @return bool
      */
     public function canCreate($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member, $context);
-        if ($extended !== null) {
+        if (null !== $extended) {
             return $extended;
         }
 
@@ -393,12 +417,12 @@ class EnquiryFormField extends DataObject
      *
      * @param Member $member SilverStripe member
      *
-     * @return boolean
+     * @return bool
      */
     public function canDelete($member = null)
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
-        if ($extended !== null) {
+        if (null !== $extended) {
             return $extended;
         }
 

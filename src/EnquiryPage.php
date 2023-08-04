@@ -1,4 +1,5 @@
 <?php
+
 namespace Axllent\EnquiryPage;
 
 use Axllent\EnquiryPage\Model\EnquiryFormField;
@@ -16,9 +17,9 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\FieldType\DBText;
 use SilverStripe\ORM\FieldType\DBVarchar;
 use SilverStripe\View\ArrayData;
-use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
-class EnquiryPage extends Page
+class EnquiryPage extends \Page
 {
     /**
      * Table name
@@ -56,11 +57,13 @@ class EnquiryPage extends Page
     private static $random_string = '3HNbhqWBEg';
 
     /**
-     * CMS icon
+     * Page icon class
      *
      * @var string
+     *
+     * @config
      */
-    private static $icon = 'axllent/silverstripe-enquiry-page: images/EnquiryPage.png';
+    private static $icon_class = 'font-icon-p-post';
 
     /**
      * Description
@@ -72,7 +75,8 @@ class EnquiryPage extends Page
     /**
      * Database field definitions.
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $db = [
@@ -91,7 +95,8 @@ class EnquiryPage extends Page
     /**
      * Defines one-to-many relationships.
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $has_many = [
@@ -101,7 +106,8 @@ class EnquiryPage extends Page
     /**
      * DataObject defaults
      *
-     * @var    array
+     * @var array
+     *
      * @config
      */
     private static $defaults = [
@@ -127,46 +133,10 @@ class EnquiryPage extends Page
     protected $usedFieldCounter = 0;
 
     /**
-     * Get the client IP by querying the $_SERVER array.
-     *
-     * @return string
-     */
-    public static function get_client_ip()
-    {
-        $fields = Config::inst()->get(self::class, 'client_ip_fields');
-        if ($fields) {
-            if (is_string($fields)) {
-                $fields = [$fields];
-            }
-            foreach ($fields as $field) {
-                if (isset($_SERVER[$field])) {
-                    return $_SERVER[$field];
-                }
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Return the hash to use for comparison.
-     *
-     * @param string $token Token
-     *
-     * @return string
-     */
-    public static function get_hash($token)
-    {
-        $ip            = self::get_client_ip();
-        $random_string = Config::inst()->get(self::class, 'random_string');
-
-        return md5(trim($token) . $ip . $random_string);
-    }
-
-    /**
      * Data administration interface in Silverstripe.
      *
      * @see    {@link ValidationResult}
+     *
      * @return FieldList Returns a TabSet for usage within the CMS
      */
     public function getCMSFields()
@@ -174,7 +144,11 @@ class EnquiryPage extends Page
         $fields = parent::getCMSFields();
 
         $config = GridFieldConfig_RecordEditor::create(100);
-        $config->addComponent(new GridFieldSortableRows('SortOrder'));
+        if (class_exists(GridFieldOrderableRows::class)) {
+            $config->addComponent(
+                GridFieldOrderableRows::create('SortOrder')
+            );
+        }
 
         $gridField = GridField::create(
             'EnquiryFormFields',
@@ -246,20 +220,58 @@ class EnquiryPage extends Page
     }
 
     /**
+     * Get the client IP by querying the $_SERVER array.
+     *
+     * @return string
+     */
+    public static function getClientIP()
+    {
+        $fields = Config::inst()->get(self::class, 'client_ip_fields');
+        if ($fields) {
+            if (is_string($fields)) {
+                $fields = [$fields];
+            }
+            foreach ($fields as $field) {
+                if (isset($_SERVER[$field])) {
+                    return $_SERVER[$field];
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Return the hash to use for comparison.
+     *
+     * @param string $token Token
+     *
+     * @return string
+     */
+    public static function getHash($token)
+    {
+        $ip            = self::getClientIP();
+        $random_string = Config::inst()->get(self::class, 'random_string');
+
+        return md5(trim($token) . $ip . $random_string);
+    }
+
+    /**
      * Validate the current object.
      *
      * @see    {@link ValidationResult}
+     *
      * @return ValidationResult
      */
     public function validate()
     {
         $valid = parent::validate();
 
-        if ($this->EmailSubmitButtonText == '') {
+        if ('' == $this->EmailSubmitButtonText) {
             $this->EmailSubmitButtonText = 'Submit enquiry';
         }
 
-        if ($this->CaptchaText == '') {
+        if ('' == $this->CaptchaText) {
             $this->CaptchaText = 'Verification image';
         }
 
@@ -282,7 +294,7 @@ class EnquiryPage extends Page
             $type = $el->FieldType;
             if (in_array($type, ['Header', 'HTML'])) {
                 // Cosmetic element (not used in emails)
-            } elseif (isset($data[$key]) && $data[$key] != '') {
+            } elseif (isset($data[$key]) && '' != $data[$key]) {
                 // Ensure the element is valorized
                 $raw = $data[$key];
                 if (is_array($raw)) {
@@ -291,7 +303,7 @@ class EnquiryPage extends Page
                     foreach ($raw as $item) {
                         $value->push(ArrayData::create(['Item' => $item]));
                     }
-                } elseif (strpos($raw, "\n") === false) {
+                } elseif (false === strpos($raw, "\n")) {
                     // Single line of text
                     $value = DBVarchar::create()->setValue($raw);
                 } else {

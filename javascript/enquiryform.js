@@ -2,8 +2,8 @@ function validateEnquiryForm() {
 	var valid = true;
 	var e = EnquiryFormValidator;
 	for (var el in e) {
-		var elItem = document.getElementById('Form_EnquiryForm_'+el);
-		elItem.className = elItem.className.replace(/\binvalid\b/,'');
+		var elItem = document.getElementById('Form_EnquiryForm_' + el);
+		elItem.className = elItem.className.replace(/\binvalid\b/, '');
 		if (e[el] == 'Email') { // Email
 			var elValue = elItem.value.replace(/^\s+|\s+$/g, ''); // trim
 			validRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -26,8 +26,8 @@ function validateEnquiryForm() {
 		else if (e[el] == 'Radio') { // Radio
 			var elValue = false;
 			var rdios = document.getElementsByName(el);
-			for(var i = 0; i < rdios.length; i++) {
-				if(rdios[i].checked == true) {
+			for (var i = 0; i < rdios.length; i++) {
+				if (rdios[i].checked == true) {
 					elValue = true;
 				}
 			}
@@ -46,9 +46,9 @@ function validateEnquiryForm() {
 }
 
 function initEnquiryFormValidator() {
-	if(EnquiryFormValidator && document.getElementById('Form_EnquiryForm')) {
+	if (EnquiryFormValidator && document.getElementById('Form_EnquiryForm')) {
 		var f = document.getElementById('Form_EnquiryForm');
-		f.onsubmit=validateEnquiryForm;
+		f.onsubmit = validateEnquiryForm;
 		if (f.querySelector && f.querySelector('.message.required') && f.scrollIntoView) {
 			f.scrollIntoView();
 		}
@@ -56,11 +56,12 @@ function initEnquiryFormValidator() {
 }
 
 function addEnquiryFormLoadEvent(func) {
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') window.onload = func;
-	else {
-		window.onload = function(){
-			oldonload();
+	var origOnload = window.onload;
+	if (typeof window.onload != 'function') {
+		window.onload = func;
+	} else {
+		window.onload = function () {
+			origOnload();
 			func();
 		}
 	}
