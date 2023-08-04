@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+## [3.0.0]
+
+- Release for Silverstripe 5
+- Use Silverstripe icon for page icon
+- Switch from `undefinedoffset/sortablegridfield` to `symbiote/silverstripe-gridfieldextensions` for sorting
+
+
 ## [2.3.4]
 
 - Change `$default_sort` to a string
