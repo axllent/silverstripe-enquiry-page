@@ -3,8 +3,8 @@
 namespace Axllent\EnquiryPage;
 
 use Axllent\EnquiryPage\Model\EnquiryFormField;
-use Page;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\EmailField;
 use SilverStripe\Forms\GridField\GridField;
@@ -13,10 +13,10 @@ use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\ToggleCompositeField;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\ArrayData;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\FieldType\DBText;
 use SilverStripe\ORM\FieldType\DBVarchar;
-use SilverStripe\View\ArrayData;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 class EnquiryPage extends \Page
@@ -63,7 +63,7 @@ class EnquiryPage extends \Page
      *
      * @config
      */
-    private static $icon_class = 'font-icon-p-post';
+    private static $cms_icon_class = 'font-icon-p-post';
 
     /**
      * Description
@@ -143,6 +143,22 @@ class EnquiryPage extends \Page
     {
         $fields = parent::getCMSFields();
 
+        $fields->removeByName(
+            [
+                'EnquiryFormFields',
+                'EmailTo',
+                'EmailFrom',
+                'EmailSubject',
+                'EmailSubmitCompletion',
+                'EmailBcc',
+                'EmailSubmitButtonText',
+                'EmailPlain',
+                'AddCaptcha',
+                'CaptchaText',
+                'CaptchaHelp',
+            ]
+        );
+
         $config = GridFieldConfig_RecordEditor::create(100);
         if (class_exists(GridFieldOrderableRows::class)) {
             $config->addComponent(
@@ -197,9 +213,9 @@ class EnquiryPage extends \Page
                     0 => 'No',
                 ]
             )->setRightTitle(
-                'Add an anti-spam "captcha" image. ' .
-                'This adds a small image with 4 random ' .
-                'numbers which needs to be filled in correctly.'
+                'Add an anti-spam "captcha" image. '
+                . 'This adds a small image with 4 random '
+                . 'numbers which needs to be filled in correctly.'
             ),
             TextField::create('CaptchaText', 'Field name'),
             TextField::create('CaptchaHelp', 'Captcha help')
@@ -214,7 +230,7 @@ class EnquiryPage extends \Page
             $email_settings
         );
 
-        $fields->addFieldsToTab('Root.EnquiryForm', $toggleSettings);
+        $fields->addFieldToTab('Root.EnquiryForm', $toggleSettings);
 
         return $fields;
     }
@@ -260,10 +276,8 @@ class EnquiryPage extends \Page
      * Validate the current object.
      *
      * @see    {@link ValidationResult}
-     *
-     * @return ValidationResult
      */
-    public function validate()
+    public function validate(): ValidationResult
     {
         $valid = parent::validate();
 

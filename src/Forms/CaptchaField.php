@@ -4,6 +4,7 @@ namespace Axllent\EnquiryPage\Forms;
 
 use Axllent\EnquiryPage\EnquiryPage;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\TextField;
 
 class CaptchaField extends TextField
@@ -40,13 +41,10 @@ class CaptchaField extends TextField
 
     /**
      * Server-side validation
-     *
-     * @param ValidationResult $validator Validator
-     *
-     * @return ValidationResult
      */
-    public function validate($validator)
+    public function validate(): ValidationResult
     {
+        $valid     = parent::validate();
         $typed     = EnquiryPage::getHash($this->value);
         $generated = Controller::curr()
             ->getRequest()
@@ -54,12 +52,14 @@ class CaptchaField extends TextField
             ->get('customcaptcha');
 
         if ($typed != $generated) {
-            $validator->validationError(
+            $valid->addFieldError(
                 $this->name,
-                'Codes do not match, please try again',
+                'Code does not match, please try again',
                 'required'
             );
             $this->value = '';
         }
+
+        return $valid;
     }
 }

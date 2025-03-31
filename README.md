@@ -1,8 +1,7 @@
 # Enquiry Page Module for Silverstripe 5
 
-This is a simple module to add an Enquiry Page pagetype to the CMS. The module uses
-optional JavaScript form validation, so no requirements for third-party JavaScript
-libraries (eg: jQuery). The enquiry form can be configured to add & order
+This is a simple module to add an Enquiry Page page type to the CMS. The module uses
+optional vanilla JavaScript form validation. The enquiry form can be configured to add & order
 your own fields, including the following types:
 
 - **Text** (TextField/TextAreaField)
@@ -17,8 +16,7 @@ your own fields, including the following types:
 ## Configuration options include:
 
 -   Send email to
--   Send email from (the "reply to" will default to the first Email field in the form,
-    or alternatively this value)
+-   Send email from (the "reply to" will default to the first Email field in the form, or alternatively this value)
 -   Email subject
 -   Message once completed
 -   BCC copy
@@ -68,8 +66,8 @@ Axllent\EnquiryPage\EnquiryPage:
 
 ## Requirements
 
-- Silverstripe ^5
-- [GridFieldExtensions](https://github.com/symbiote/silverstripe-gridfieldextensions)
+- Silverstripe ^6 (see other branches for previous versions)
+- [symbiote/silverstripe-gridfieldextensions](https://github.com/symbiote/silverstripe-gridfieldextensions)
 
 
 ## Installation

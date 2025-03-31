@@ -3,6 +3,7 @@
 namespace Axllent\EnquiryPage\Model;
 
 use Axllent\EnquiryPage\EnquiryPage;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HeaderField;
@@ -63,7 +64,7 @@ class EnquiryFormField extends DataObject
     ];
 
     /**
-     * One-to-zero relationship defintions.
+     * One-to-zero relationship definitions.
      *
      * @var array
      *
@@ -186,7 +187,7 @@ class EnquiryFormField extends DataObject
 
                 $fields->addFieldToTab(
                     'Root.Main',
-                    HtmlEditorField::create('FieldOptions', 'HTML text')
+                    HTMLEditorField::create('FieldOptions', 'HTML text')
                 );
 
                 break;
@@ -203,7 +204,7 @@ class EnquiryFormField extends DataObject
 
                 $fields->addFieldToTab(
                     'Root.Main',
-                    HtmlEditorField::create('FieldOptions', 'HTML content')
+                    HTMLEditorField::create('FieldOptions', 'HTML content')
                 );
 
                 break;
@@ -245,8 +246,8 @@ class EnquiryFormField extends DataObject
      */
     public function getType()
     {
-        return isset(self::$field_types[$this->FieldType]) ?
-        self::$field_types[$this->FieldType] : 'Invalid';
+        return isset(self::$field_types[$this->FieldType])
+        ? self::$field_types[$this->FieldType] : 'Invalid';
     }
 
     /**
@@ -281,10 +282,8 @@ class EnquiryFormField extends DataObject
      * Validate the current object.
      *
      * @see    {@link ValidationResult}
-     *
-     * @return ValidationResult
      */
-    public function validate()
+    public function validate(): ValidationResult
     {
         $valid = parent::validate();
 
@@ -315,7 +314,7 @@ class EnquiryFormField extends DataObject
                     "\n",
                     preg_split(
                         '/\n\r?/',
-                        $this->FieldOptions,
+                        (string) $this->FieldOptions,
                         -1,
                         PREG_SPLIT_NO_EMPTY
                     )
@@ -341,11 +340,7 @@ class EnquiryFormField extends DataObject
 
         if ('Radio' == $this->FieldType) {
             $this->PlaceholderText = '';
-        } elseif (!in_array(
-            $this->FieldType,
-            ['Text', 'Email', 'Select', 'Checkbox']
-        )
-        ) {
+        } elseif (!in_array($this->FieldType, ['Text', 'Email', 'Select', 'Checkbox'])) {
             $this->RequiredField   = 0;
             $this->PlaceholderText = '';
         }
@@ -353,16 +348,10 @@ class EnquiryFormField extends DataObject
 
     /**
      * Get title
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        if ($this->exists()) {
-            return $this->FieldName;
-        }
-
-        return 'New';
+        return $this->exists() ? $this->FieldName : 'New';
     }
 
     /**

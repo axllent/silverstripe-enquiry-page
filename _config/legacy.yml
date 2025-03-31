@@ -1,7 +1,0 @@
----
-Name: enquirypagelegacy
----
-SilverStripe\ORM\DatabaseAdmin:
-  classname_value_remapping:
-    EnquiryPage: Axllent\EnquiryPage\EnquiryPage
-    EnquiryFormField: Axllent\EnquiryPage\Model\EnquiryFormField

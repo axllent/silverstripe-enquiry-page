@@ -17,9 +17,9 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\HTMLReadonlyField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\OptionSetField;
-use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TextAreaField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\View\Parsers\ShortcodeParser;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 use SilverStripe\View\Requirements;
@@ -75,9 +75,9 @@ class EnquiryPageController extends \PageController
             return false;
         }
 
-        // Build the fieldlist
+        // Build the FieldList
         $fields      = FieldList::create();
-        $validator   = RequiredFields::create();
+        $validator   = RequiredFieldsValidator::create();
         $jsValidator = [];
 
         // Create filter for possible $_GET parameters / pre-population
@@ -91,7 +91,7 @@ class EnquiryPageController extends \PageController
                 if (1 == $el->FieldOptions) {
                     $field = TextField::create($key, $el->FieldName);
                 } else {
-                    $field = TextareaField::create($key, $el->FieldName);
+                    $field = TextAreaField::create($key, $el->FieldName);
                     $field->setRows($el->FieldOptions);
                 }
             } elseif ('Email' == $el->FieldType) {
@@ -129,7 +129,7 @@ class EnquiryPageController extends \PageController
                 }
             } elseif ('Radio' == $el->FieldType) {
                 $options = preg_split(
-                    '/\n\r?/',
+                    '/\r?\n/',
                     $el->FieldOptions,
                     -1,
                     PREG_SPLIT_NO_EMPTY
@@ -139,7 +139,7 @@ class EnquiryPageController extends \PageController
                     foreach ($options as $o) {
                         $tmp[trim($o)] = trim($o);
                     }
-                    $field = OptionsetField::create($key, $el->FieldName, $tmp);
+                    $field = OptionSetField::create($key, $el->FieldName, $tmp);
                 }
             } elseif ('Header' == $el->FieldType) {
                 // Readonly field
@@ -155,8 +155,9 @@ class EnquiryPageController extends \PageController
                 // Allow $_GET parameters to pre-populate fields
                 $request = $this->request;
                 $get_var = $get_param_filter->filter($el->FieldName);
+
                 if (!$request->isPOST()
-                    && !$field->Value()
+                    && !$field->getValue()
                     && null != $request->getVar($get_var)
                 ) {
                     $field->setValue($request->getVar($get_var));
@@ -293,9 +294,9 @@ class EnquiryPageController extends \PageController
             ->get('Axllent\EnquiryPage\EnquiryPage', 'captcha_img_height');
         $my_image = imagecreatetruecolor($width, $height);
         imagefill($my_image, 0, 0, 0xFFFFFF);
-        $purple         = imageColorAllocate($my_image, 200, 0, 255);
-        $black          = imageColorAllocate($my_image, 255, 255, 255);
-        $green          = imageColorAllocate($my_image, 22, 255, 2);
+        $purple         = imagecolorallocate($my_image, 200, 0, 255);
+        $black          = imagecolorallocate($my_image, 255, 255, 255);
+        $green          = imagecolorallocate($my_image, 22, 255, 2);
         $random_colours = [$purple, $green, $black];
         // add noise
         for ($c = 0; $c < 150; ++$c) {
