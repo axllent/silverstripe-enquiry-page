@@ -2,6 +2,11 @@
 
 Notable changes to this project will be documented in this file.
 
+## [4.0.0]
+
+- Release for Silverstripe 6
+
+
 ## [3.0.0]
 
 - Release for Silverstripe 5
