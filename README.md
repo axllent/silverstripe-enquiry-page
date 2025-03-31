@@ -1,4 +1,4 @@
-# Enquiry Page Module for Silverstripe 5
+# Enquiry Page Module for Silverstripe
 
 This is a simple module to add an Enquiry Page page type to the CMS. The module uses
 optional vanilla JavaScript form validation. The enquiry form can be configured to add & order
