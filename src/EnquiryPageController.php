@@ -64,9 +64,7 @@ class EnquiryPageController extends \PageController
             return false;
         }
 
-        if (!$this->EmailSubject) {
-            $this->EmailSubject = 'Website enquiry';
-        }
+        $this->EmailSubject = $this->fieldValueOrDefault('EmailSubject');
 
         $elements = $this->EnquiryFormFields();
 
@@ -331,6 +329,6 @@ class EnquiryPageController extends \PageController
      */
     public function getCaptchaLabel()
     {
-        return ($this->CaptchaText) ? $this->CaptchaText : 'Verification image';
+        return $this->fieldValueOrDefault('CaptchaText');
     }
 }

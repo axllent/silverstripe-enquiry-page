@@ -13,6 +13,7 @@ use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\ToggleCompositeField;
+use SilverStripe\i18n\i18n;
 use SilverStripe\Model\ArrayData;
 use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\FieldType\DBText;
@@ -45,7 +46,7 @@ class EnquiryPage extends \Page
     /**
      * Looked up in $_SERVER
      *
-     * @var string
+     * @var string|array
      */
     private static $client_ip_fields = 'REMOTE_ADDR';
 
@@ -64,13 +65,6 @@ class EnquiryPage extends \Page
      * @config
      */
     private static $cms_icon_class = 'font-icon-p-post';
-
-    /**
-     * Description
-     *
-     * @var string
-     */
-    private static $description = 'Page with an editable contact form';
 
     /**
      * Database field definitions.
@@ -104,18 +98,14 @@ class EnquiryPage extends \Page
     ];
 
     /**
-     * DataObject defaults
+     * Static default values.
      *
      * @var array
      *
      * @config
      */
     private static $defaults = [
-        'EmailSubject'          => 'Website enquiry',
-        'EmailSubmitButtonText' => 'Submit enquiry',
-        'EmailSubmitCompletion' => "<p>Thanks, we've received your enquiry and will respond as soon as we're able.</p>",
-        'EmailPlain'            => false,
-        'CaptchaText'           => 'Verification image',
+        'EmailPlain' => false,
     ];
 
     /**
@@ -131,6 +121,47 @@ class EnquiryPage extends \Page
      * @var int
      */
     protected $usedFieldCounter = 0;
+
+    public static function fieldAddendum(string $field)
+    {
+        return i18n::getMessageProvider()->translate(
+            __CLASS__.'.addendum_'.$field,
+            "Addendum for $field",
+            []
+        );
+    }
+
+    /**
+     * Get a field value or its localised default value
+     *
+     * @return string
+     */
+    public function fieldValueOrDefault(string $field)
+    {
+        $value = $this->getField($field);
+        if ('' == $value) {
+            $value = i18n::getMessageProvider()->translate(
+                __CLASS__.'.default_'.$field,
+                "Default for $field",
+                []
+            );
+        }
+        return $value;
+    }
+
+    /**
+     * Dynamic default values.
+     *
+     * return static $this
+     */
+    public function populateDefaults()
+    {
+        $this->EmailSubject = $this->fieldValueOrDefault('EmailSubject');
+        $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
+        $this->EmailSubmitButtonText = $this->fieldValueOrDefault('EmailSubmitButtonText');
+        $this->EmailSubmitCompletion = $this->fieldValueOrDefault('EmailSubmitCompletion');
+        return parent::populateDefaults();
+    }
 
     /**
      * Data administration interface in Silverstripe.
@@ -168,65 +199,60 @@ class EnquiryPage extends \Page
 
         $gridField = GridField::create(
             'EnquiryFormFields',
-            'Enquiry form fields',
+            $this->fieldLabel('EnquiryFormFields'),
             $this->EnquiryFormFields(),
             $config
         );
         $fields->addFieldToTab('Root.EnquiryForm', $gridField);
 
-        if (!$this->CaptchaText) {
-            $this->CaptchaText = 'Verification image';
-        }
+        // Localise the tab label
+        $fields->fieldByName('Root.EnquiryForm')->setTitle(
+            _t(__CLASS__.'.TabEnquiryForm', 'Enquiry form')
+        );
+
+        $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
 
         $email_settings = [
-            EmailField::create('EmailTo', 'Send email to')
+            EmailField::create('EmailTo', $this->fieldLabel('EmailTo'))
                 ->setAttribute('placeholder', 'you@yourdomain.com'),
-            EmailField::create('EmailFrom', 'Send email from')
+            EmailField::create('EmailFrom', $this->fieldLabel('EmailFrom'))
                 ->setAttribute('placeholder', 'website@yourdomain.com')
-                ->setRightTitle('For example website@yourdomain.com'),
-            TextField::create('EmailSubject', 'Email subject'),
+                ->setRightTitle(self::fieldAddendum('EmailFrom')),
+            TextField::create('EmailSubject', $this->fieldLabel('EmailSubject')),
             HTMLEditorField::create(
                 'EmailSubmitCompletion',
-                'Message once completed'
+                $this->fieldLabel('EmailSubmitCompletion')
             )
                 ->setRows(10)
                 ->addExtraClass('stacked'),
-            EmailField::create('EmailBcc', 'BCC copy (optional)')
-                ->setRightTitle(
-                    'If you would like a copy of the enquiry to be sent elsewhere'
-                ),
-            TextField::create('EmailSubmitButtonText', 'Submit button text'),
+            EmailField::create('EmailBcc', $this->fieldLabel('EmailBcc'))
+                ->setRightTitle(self::fieldAddendum('EmailBcc')),
+            TextField::create('EmailSubmitButtonText', $this->fieldLabel('EmailSubmitButtonText')),
             DropdownField::create(
                 'EmailPlain',
-                'Email format',
+                $this->fieldLabel('EmailPlain'),
                 [
-                    0 => 'HTML email (default)',
-                    1 => 'Plain text email',
+                    0 => _t(__CLASS__.'.FORMATHTML', 'HTML email (default)'),
+                    1 => _t(__CLASS__.'.FORMATPLAIN', 'Plain text email'),
                 ]
             ),
-            HeaderField::create('CaptchaHdr', 'Form captcha'),
+            HeaderField::create('CaptchaHdr', _t(__CLASS__.'.CAPTCHA', 'Form captcha')),
             DropdownField::create(
                 'AddCaptcha',
-                'Captcha image',
+                $this->fieldLabel('AddCaptcha'),
                 [
-                    1 => 'Yes add a captcha image',
-                    0 => 'No',
+                    1 => _t(__CLASS__.'.CAPTCHAENABLED', 'Yes, add a captcha image'),
+                    0 => _t(__CLASS__.'.CAPTCHADISABLED', 'No'),
                 ]
-            )->setRightTitle(
-                'Add an anti-spam "captcha" image. '
-                . 'This adds a small image with 4 random '
-                . 'numbers which needs to be filled in correctly.'
-            ),
-            TextField::create('CaptchaText', 'Field name'),
-            TextField::create('CaptchaHelp', 'Captcha help')
-                ->setRightTitle(
-                    'Optionally add an explanation of what the captcha field is'
-                ),
+            )->setRightTitle(self::fieldAddendum('AddCaptcha')),
+            TextField::create('CaptchaText', $this->fieldLabel('CaptchaText')),
+            TextField::create('CaptchaHelp', $this->fieldLabel('CaptchaHelp'))
+                ->setRightTitle(self::fieldAddendum('CaptchaHelp')),
         ];
 
         $toggleSettings = ToggleCompositeField::create(
             'FormSettings',
-            'Enquiry form settings',
+            _t(__CLASS__.'.TOGGLESETTINGS', 'Enquiry form settings'),
             $email_settings
         );
 
@@ -280,15 +306,8 @@ class EnquiryPage extends \Page
     public function validate(): ValidationResult
     {
         $valid = parent::validate();
-
-        if ('' == $this->EmailSubmitButtonText) {
-            $this->EmailSubmitButtonText = 'Submit enquiry';
-        }
-
-        if ('' == $this->CaptchaText) {
-            $this->CaptchaText = 'Verification image';
-        }
-
+        $this->EmailSubmitButtonText = $this->fieldValueOrDefault('EmailSubmitButtonText');
+        $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
         return $valid;
     }
 

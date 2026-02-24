@@ -54,7 +54,7 @@ class CaptchaField extends TextField
         if ($typed != $generated) {
             $valid->addFieldError(
                 $this->name,
-                'Code does not match, please try again',
+                _t(__CLASS__.'.ERRORNOMATCH', 'Code does not match: please, try again'),
                 'required'
             );
             $this->value = '';
