@@ -46,7 +46,7 @@ class EnquiryPage extends \Page
     /**
      * Looked up in $_SERVER
      *
-     * @var string|array
+     * @var array|string
      */
     private static $client_ip_fields = 'REMOTE_ADDR';
 
@@ -125,8 +125,8 @@ class EnquiryPage extends \Page
     public static function fieldAddendum(string $field)
     {
         return i18n::getMessageProvider()->translate(
-            __CLASS__.'.addendum_'.$field,
-            "Addendum for $field",
+            __CLASS__ . '.addendum_' . $field,
+            "Addendum for {$field}",
             []
         );
     }
@@ -141,11 +141,12 @@ class EnquiryPage extends \Page
         $value = $this->getField($field);
         if ('' == $value) {
             $value = i18n::getMessageProvider()->translate(
-                __CLASS__.'.default_'.$field,
-                "Default for $field",
+                __CLASS__ . '.default_' . $field,
+                "Default for {$field}",
                 []
             );
         }
+
         return $value;
     }
 
@@ -156,10 +157,11 @@ class EnquiryPage extends \Page
      */
     public function populateDefaults()
     {
-        $this->EmailSubject = $this->fieldValueOrDefault('EmailSubject');
-        $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
+        $this->EmailSubject          = $this->fieldValueOrDefault('EmailSubject');
+        $this->CaptchaText           = $this->fieldValueOrDefault('CaptchaText');
         $this->EmailSubmitButtonText = $this->fieldValueOrDefault('EmailSubmitButtonText');
         $this->EmailSubmitCompletion = $this->fieldValueOrDefault('EmailSubmitCompletion');
+
         return parent::populateDefaults();
     }
 
@@ -207,7 +209,7 @@ class EnquiryPage extends \Page
 
         // Localise the tab label
         $fields->fieldByName('Root.EnquiryForm')->setTitle(
-            _t(__CLASS__.'.TabEnquiryForm', 'Enquiry form')
+            _t(__CLASS__ . '.TabEnquiryForm', 'Enquiry form')
         );
 
         $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
@@ -232,17 +234,17 @@ class EnquiryPage extends \Page
                 'EmailPlain',
                 $this->fieldLabel('EmailPlain'),
                 [
-                    0 => _t(__CLASS__.'.FORMATHTML', 'HTML email (default)'),
-                    1 => _t(__CLASS__.'.FORMATPLAIN', 'Plain text email'),
+                    0 => _t(__CLASS__ . '.FORMATHTML', 'HTML email (default)'),
+                    1 => _t(__CLASS__ . '.FORMATPLAIN', 'Plain text email'),
                 ]
             ),
-            HeaderField::create('CaptchaHdr', _t(__CLASS__.'.CAPTCHA', 'Form captcha')),
+            HeaderField::create('CaptchaHdr', _t(__CLASS__ . '.CAPTCHA', 'Form captcha')),
             DropdownField::create(
                 'AddCaptcha',
                 $this->fieldLabel('AddCaptcha'),
                 [
-                    1 => _t(__CLASS__.'.CAPTCHAENABLED', 'Yes, add a captcha image'),
-                    0 => _t(__CLASS__.'.CAPTCHADISABLED', 'No'),
+                    1 => _t(__CLASS__ . '.CAPTCHAENABLED', 'Yes, add a captcha image'),
+                    0 => _t(__CLASS__ . '.CAPTCHADISABLED', 'No'),
                 ]
             )->setRightTitle(self::fieldAddendum('AddCaptcha')),
             TextField::create('CaptchaText', $this->fieldLabel('CaptchaText')),
@@ -252,7 +254,7 @@ class EnquiryPage extends \Page
 
         $toggleSettings = ToggleCompositeField::create(
             'FormSettings',
-            _t(__CLASS__.'.TOGGLESETTINGS', 'Enquiry form settings'),
+            _t(__CLASS__ . '.TOGGLESETTINGS', 'Enquiry form settings'),
             $email_settings
         );
 
@@ -305,9 +307,10 @@ class EnquiryPage extends \Page
      */
     public function validate(): ValidationResult
     {
-        $valid = parent::validate();
+        $valid                       = parent::validate();
         $this->EmailSubmitButtonText = $this->fieldValueOrDefault('EmailSubmitButtonText');
-        $this->CaptchaText = $this->fieldValueOrDefault('CaptchaText');
+        $this->CaptchaText           = $this->fieldValueOrDefault('CaptchaText');
+
         return $valid;
     }
 

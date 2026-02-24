@@ -99,11 +99,12 @@ class EnquiryFormField extends DataObject
         $fields = parent::summaryFields();
         foreach ($fields as $field => &$label) {
             $label = i18n::getMessageProvider()->translate(
-                __CLASS__.'.summary_'.$field,
+                __CLASS__ . '.summary_' . $field,
                 $label,
                 []
             );
         }
+
         return $fields;
     }
 
@@ -146,7 +147,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HeaderField::create(
                         'FieldHdr_' . $hdrcnt++,
-                        _t(__CLASS__.'.SELECTOPTIONS', 'Add options below (one per line):'),
+                        _t(__CLASS__ . '.SELECTOPTIONS', 'Add options below (one per line):'),
                         4
                     ),
                     'FieldOptions'
@@ -160,7 +161,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HeaderField::create(
                         'FieldHdr_' . $hdrcnt++,
-                        _t(__CLASS__.'.CHECKBOXOPTIONS', 'Add options below (one per line) - users can select multiple:'),
+                        _t(__CLASS__ . '.CHECKBOXOPTIONS', 'Add options below (one per line) - users can select multiple:'),
                         4
                     ),
                     'FieldOptions'
@@ -174,7 +175,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HeaderField::create(
                         'FieldHdr_' . $hdrcnt++,
-                        _t(__CLASS__.'.RADIOOPTIONS', 'Add options below (one per line) - users can select only one:'),
+                        _t(__CLASS__ . '.RADIOOPTIONS', 'Add options below (one per line) - users can select only one:'),
                         4
                     ),
                     'FieldOptions'
@@ -197,7 +198,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HTMLEditorField::create(
                         'FieldOptions',
-                        _t(__CLASS__.'.HEADEROPTIONS', 'HTML text')
+                        _t(__CLASS__ . '.HEADEROPTIONS', 'HTML text')
                     )
                 );
 
@@ -217,7 +218,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     HTMLEditorField::create(
                         'FieldOptions',
-                        _t(__CLASS__.'.HTMLOPTIONS', 'HTML content')
+                        _t(__CLASS__ . '.HTMLOPTIONS', 'HTML content')
                     )
                 );
 
@@ -229,7 +230,7 @@ class EnquiryFormField extends DataObject
                     'Root.Main',
                     NumericField::create(
                         'FieldOptions',
-                        _t(__CLASS__.'.TEXTOPTIONS', 'Number of rows')
+                        _t(__CLASS__ . '.TEXTOPTIONS', 'Number of rows')
                     )
                         ->setValue(1),
                     'PlaceholderText'
@@ -311,10 +312,10 @@ class EnquiryFormField extends DataObject
             $this->FieldName = 'HTML';
         }
         if ('' == $this->FieldName) {
-            $valid->addError(_t(__CLASS__.'.ERRORNONAME', 'Please enter a Field Name'));
+            $valid->addError(_t(__CLASS__ . '.ERRORNONAME', 'Please enter a Field Name'));
         }
         if ('' == $this->FieldType) {
-            $valid->addError(_t(__CLASS__.'.ERRORNOTYPE', 'Please select a Field Type'));
+            $valid->addError(_t(__CLASS__ . '.ERRORNOTYPE', 'Please select a Field Type'));
         }
         if ('Text' == $this->FieldType
             && (
